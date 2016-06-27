@@ -87,12 +87,12 @@ The code is also fairly extensively commented to provide clarity.
 #### Preparation
 
 Make sure you have all the required packages.
-# Initialize a basic meteor project. e.g. `meteor create react-blog`
-# Replace the default meteor folders with [Base](https://themeteorchef.com/base/)
-# Finish installing Base with: `npm install`
-# Add speakingurl: `meteor add ongoworks:speakingurl`
-# Add commonmark: `meteor add themeteorchef:commonmark
-# Add momentjs: `meteor add momentjs:moment`
+1. Initialize a basic meteor project. e.g. `meteor create react-blog`
+1. Replace the default meteor folders with [Base](https://themeteorchef.com/base/)
+1. Finish installing Base with: `npm install`
+1. Add speakingurl: `meteor add ongoworks:speakingurl`
+1. Add commonmark: `meteor add themeteorchef:commonmark
+1. Add momentjs: `meteor add momentjs:moment`
 
 
 #### Setting Up Admin Users
