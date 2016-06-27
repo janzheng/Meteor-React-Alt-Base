@@ -31,4 +31,10 @@ xolvio:cleaner
 practicalmeteor:mocha
 xolvio:backdoor
 mdg:validated-method
-dburles:factory@1.0.0
+dburles:factory
+ongoworks:speakingurl
+themeteorchef:commonmark
+momentjs:moment
+react-meteor-data
+vsivsi:file-collection
+benjaminrh:jquery-cookie

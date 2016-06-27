@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { Row, Col, FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap';
+import { Row, Col, FormGroup, ControlLabel, FormControl, Button, Alert } from 'react-bootstrap';
 import { handleLogin } from '../../modules/login';
 
 export class Login extends React.Component {
@@ -16,6 +16,11 @@ export class Login extends React.Component {
     return <Row>
       <Col xs={ 12 } sm={ 6 } md={ 4 }>
         <h4 className="page-header">Login</h4>
+
+        <Alert>
+          To access the demo, you can use the email address <strong>joe@hdbuff.com</strong> and the password <strong>password</strong>.
+        </Alert>
+
         <form ref="login" className="login" onSubmit={ this.handleSubmit }>
           <FormGroup>
             <ControlLabel>Email Address</ControlLabel>
