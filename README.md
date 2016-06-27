@@ -87,6 +87,7 @@ The code is also fairly extensively commented to provide clarity.
 #### Preparation
 
 Make sure you have all the required packages.
+
 1. Initialize a basic meteor project. e.g. `meteor create react-blog`
 1. Replace the default meteor folders with [Base](https://themeteorchef.com/base/)
 1. Finish installing Base with: `npm install`
