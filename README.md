@@ -7,7 +7,7 @@ Please use this project in any way you want: as a learning tool for Meteor, Reac
 
 If you're using this as a learning tool, read [the original tutorial first](https://themeteorchef.com/recipes/building-a-blog-with-react/) and recreate the tutorial in React Router yourself. This form of active learning can be daunting, but really helped me understand both Meteor and React. It'll do you good. I promise.
 
-For amazing tutorials, please check out all the other free resources at [TheMeteorChef](https://themeteorchef.com)
+For amazing tutorials, please check out all the other free resources at [TheMeteorChef](https://themeteorchef.com).
 
 
 
@@ -19,7 +19,7 @@ Base 4 is significantly simpler and better organized, but the way some files are
 
 Please [email me at hello@janzheng](hello@janzhengs) with suggestions, questions, comments, and bugs
 
-Made by [Jan](http://janzheng.com)
+A project by [Jan Zheng](http://janzheng.com)
 
 
 
@@ -34,7 +34,7 @@ Even with Base 4's adherence to the new application structure per the [Meteor Gu
 
 To make better sense of how a Meteor + React app is organized, I've attempted to map out the way files include each other. Check out the [App Map & Outline](#appmap).
 
-I also started a way to organize SCSS styling to adhere to React component organization with a BEM-like syntax. Check out the [Styling section](#styling)
+I also started a way to organize SCSS styling to adhere to React component organization with a BEM-like syntax. Check out the [Styling section](#styling).
 
 
 
@@ -84,7 +84,7 @@ The code is also fairly extensively commented to provide clarity.
 
 
 
-#### Preparation
+### Preparation
 
 Make sure you have all the required packages.
 
@@ -92,11 +92,11 @@ Make sure you have all the required packages.
 1. Replace the default meteor folders with [Base](https://themeteorchef.com/base/)
 1. Finish installing Base with: `npm install`
 1. Add speakingurl: `meteor add ongoworks:speakingurl`
-1. Add commonmark: `meteor add themeteorchef:commonmark
+1. Add commonmark: `meteor add themeteorchef:commonmark`
 1. Add momentjs: `meteor add momentjs:moment`
 
 
-#### Setting Up Admin Users
+### Setting Up Admin Users
 Since we're building a private blog, we make sure that `/signup` is unavailable and that we add our admins manually.
 
 * Remove `/signup` from `routes.js` and from `public-navigation.js`
@@ -105,7 +105,7 @@ Since we're building a private blog, we make sure that `/signup` is unavailable 
 * change the Application title to HD Buff in `/client/main.html` and in the nav `app-navigation.js`
 
 
-#### Routing & Authentication
+### Routing & Authentication
 
 Whereas the original tutorial split routing into two folders public and authenticated routes, we have no need for a similar split in React Router. `routes.js` takes care of both public and authenticated routes.
 
@@ -113,36 +113,39 @@ Whereas the original tutorial split routing into two folders public and authenti
     * Note the default Base 4 behavior routes to `/login` first, then routes through to the intended location. This behavior differs from the tutorial where <Login /> is a component that appears on a page template for unauthenticated users. I decided to keep the Base 4 behavior for simplicity.
     * added Meteor component to show Loading state if user is logging in
 * In Base 4, every route is __public by default__. We have to add `onEnter={ requireAuth }` to every private route. Don't assume that a route is safe just because it doesn't appear in Nav. Always make sure to protect private routes.
+* Remember that order matters in routing. Authenticated routes should come before public routes, and the 404 catchall route should be at the end. 
+
+#### Organization
 
 ##### App.js
 * This is the main container – all routes are passed through this all children as props 
 * Handle all navigation in navigation `AppNavigation.js`
   – extracted proptypes outside of the component (to be more similar to the other components)
 
-```
-– Public routes
-  – /
-    – index, show all posts directly through Posts list, without a "homepage" or landing page
-    – <PostsIndex />
-  – /posts/:slug
-    – singlePost, show an individual post using its slug
-  – /tags/:tag
-    – tagIndex, show all posts by a tag, again using only the PostsIndex component
-    – <PostsIndex />
-  – /signup 
-    – removed from Base since we're hard coding all accounts since this is a private blog
-  – /login
-    – funny enough, if the /tags/:tag line is about login, /tags/login will resolve to the login screen
-
-– Authenticated routes
-  – /posts
-    – for editing posts
-    – <PostsList />
-  – /posts/:_id/edit
-    – editing individual post
-    – <Editor />
+###### Authenticated routes
+* `/posts`
+    * for posts for editing, and includes unpublished posts
+    * `<PostsList />`
+* `/posts/:_id/edit`
+    * editing an individual post
+    * `<Editor />`
   – added authRedirect component to routes to redirect logged in users to /posts
-```
+
+###### Public Routes
+* `/`
+    * show all posts directly through Posts list, without a "homepage" or landing page
+    * `<PostsIndex />`
+– `/login`
+    * funny enough, if the `/tags/:tag` line is above `login`, `/tags/login` will resolve to the login screen
+    * `<Login />
+* `/posts/:slug`
+    * readable URLs using the post slug, e.g. blog.com/posts/this-is-a-post
+    * `<SinglePost />
+* `/tags/:tag`
+    * show all posts by a tag, again using the PostsIndex component from before
+    * `<PostsIndex />`
+* `/signup`
+    * removed from Base since we're hard coding all accounts because this is a private blog
 
 – Posts schema
   – added stricter Posts allow / deny rules to posts.js
