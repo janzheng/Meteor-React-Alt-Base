@@ -1,13 +1,26 @@
 # React Base Alternate
-An (alternate) starting point for Meteor apps
+An (alternate) starting point for Meteor and React.
+
+This is a personal exercise and attempt to rewrite the tutorial on TheMeteorChef called [Building a Blog With React](https://themeteorchef.com/recipes/building-a-blog-with-react/) to use React Router and [Base v4.2.0](https://themeteorchef.com/base/), a system for jumpstarting a Meteor React project.
+
+Please use this project in any way you want: as a learning tool for Meteor, React, or as a starting point for your own projects. Keep in mind that I wrote this as a learning experience, so take it with a grain of salt. 
+
+If you're using this as a learning tool, read [the original tutorial first](https://themeteorchef.com/recipes/building-a-blog-with-react/) and recreate the tutorial in React Router yourself. This form of active learning can be daunting, but really helped me understand both Meteor and React. It'll do you good. I promise.
+
+For amazing tutorials, please check out all the other free resources at [TheMeteorChef](https://themeteorchef.com)
+
+
 
 ## Building a Blog with React
 
-This is a personal exercise and attempt to rewrite the tutorial on TheMeteorChef called [Building a Blog With React](https://themeteorchef.com/recipes/building-a-blog-with-react/) to be compatible with React Router and Base v4.2.0.
-
-These changes mean using React Router instead of Flow Router, Komposer containers, replacing the use of Mixins with Imports, using Base 4's newer way of organizing files, and so on.
+The major differences from TheMeteorChef tutorial are using React Router instead of Flow Router, Komposer containers, replacing the use of Mixins with Imports, and using Base 4's newer way of organizing files.
 
 Base 4 is significantly simpler and better organized, but the way some files are named can be confusing, so I've tried to improve the naming experience.
+
+Please [email me at hello@janzheng](hello@janzhengs) with suggestions, questions, comments, and bugs
+
+Made by [Jan](http://janzheng.com)
+
 
 
 ### Images
@@ -15,35 +28,43 @@ Base 4 is significantly simpler and better organized, but the way some files are
 I also added file and image handling to this base tutorial, since images and files popular with blogs. Although one could use something like the Imgur API, I wanted to experiment with a fully native experience through the use of [file-collection](https://atmospherejs.com/vsivsi/file-collection) and gridFS.
 
 
+### Application Structure Organization
+
+Even with Base 4's adherence to the new application structure per the [Meteor Guide](https://guide.meteor.com/structure.html) things get confusing very quickly. I've attempted to alleviate the confusion between file names through file naming conventions, yet still adhering to the Meteor Guide.
+
+To make better sense of how a Meteor + React app is organized, I've attempted to map out the way files include each other. Check out the [App Map & Outline](#appmap).
+
+I also started a way to organize SCSS styling to adhere to React component organization with a BEM-like syntax. Check out the [Styling section](#styling)
 
 
 
 
 ## Todo
 
-– add a server / data / publication / methods "documentation"
-– draw the current "import" file tree in ReadMe
-– handle file upload disconnects (handle resume, or handle garbage collection on componentWillMount() )
-– add copious amounts of inline comments explaining every line (for others and your future self)
-– rename files to make more sense
-  – add file and posts structure to the map
-  – improve naming convention (e.g. posts-list is for authenticated posts, but file name doesn't reflect this)
-  – see if it makes any sense to move some stuff around or rename files to make more sense (api/posts/... for example don't have a base include file to organize everything) – make more human readable
-– organized SCSS naming scheme that matches new file component structure
-– a way to document component file relationships 
-– finish up the writeup into markdown
-– make more readable, and upload to github
-– post on MeteorChef 
-  – make a note in the original thread comments
-– make a note on vsivsi:file-collection github issue #77 on how I handled garbage collection
-  – see if I did it right / get tips from them (re: no resumable uploads, garbage collect user's resumables by uniqueId)
+* add a server / data / publication / methods "documentation"
+* draw the current "import" file tree in ReadMe
+* handle file upload disconnects (handle resume, or handle garbage collection on componentWillMount() )
+* add copious amounts of inline comments explaining every line (for others and your future self)
+* rename files to make more sense
+    * add file and posts structure to the map
+    * improve naming convention (e.g. posts-list is for authenticated posts, but file name doesn't reflect this)
+    * see if it makes any sense to move some stuff around or rename files to make more sense (api/posts/... for example don't have a base include file to organize everything) – make more human readable
+* organized SCSS naming scheme that matches new file component structure
+* a way to document component file relationships 
+* finish up the writeup into markdown
+* make more readable, and upload to github
+* post on MeteorChef 
+    * make a note in the original thread comments
+* make a note on vsivsi:file-collection github issue #77 on how I handled garbage collection
+    * see if I did it right / get tips from them (re: no resumable uploads, garbage collect user's resumables by uniqueId)
 
 ### Done
-– add Bert to file upload and delete
-– add upload cancel
-– garbage collection of canceled files
-– hide signup, since this is only for crew
-  – hide the link on nav, hide the oute
+
+* add Bert to file upload and delete
+* add upload cancel
+* garbage collection of canceled files
+* hide signup, since this is only for crew
+    * hide the link on nav, hide the oute
 
 
 
@@ -53,50 +74,54 @@ I also added file and image handling to this base tutorial, since images and fil
 
 
 
+## Walkthrough
+
+This walkthrough assumes you've understood [the original Blog tutorial on the meteor chef](https://themeteorchef.com/recipes/building-a-blog-with-react/), and that you have a decent familiarity with Meteor projects.
+
+This app is at the core very similar to the original tutorial app on TheMeteorChef. The purpose of the walkthrough is to document the overarching steps I took to create this app from Base, as well as the differences and additions to the original tutorial, but is not meant to be an exhaustive tutorial.
+
+The code is also fairly extensively commented to provide clarity.
 
 
 
-Steps / Notes / Walkthrough
--------------------------
+#### Preparation
 
-Prep
------
-make sure the all the required packages are added
-– download meteorchef's base
-– npm install
-- add speakingurl – meteor add ongoworks:speakingurl
-- add commonmark – meteor add themeteorchef:commonmark
-– add momentjs – meteor add momentjs:moment
+Make sure you have all the required packages.
+# Initialize a basic meteor project. e.g. `meteor create react-blog`
+# Replace the default meteor folders with [Base](https://themeteorchef.com/base/)
+# Finish installing Base with: `npm install`
+# Add speakingurl: `meteor add ongoworks:speakingurl`
+# Add commonmark: `meteor add themeteorchef:commonmark
+# Add momentjs: `meteor add momentjs:moment`
 
 
-Admin Setup
-----
-– We need to manually set up all the users, since this is a private blog, and /signup is turned off in routes
-– users added to /startup/server/fixtures.js
-– change the Application Name to HD Buff
-– change Navigation title to HD Buff, remove Signup from public navigation
+#### Setting Up Admin Users
+Since we're building a private blog, we make sure that `/signup` is unavailable and that we add our admins manually.
+
+* Remove `/signup` from `routes.js` and from `public-navigation.js`
+* Manually add users to `/startup/server/fixtures.js`
+    * Note that fixtures has been changed to account for user roles (pun!) 
+* change the Application title to HD Buff in `/client/main.html` and in the nav `app-navigation.js`
 
 
-Routing & Authentication
-----
-– no need to split in authentication in React Router
+#### Routing & Authentication
 
-– Styling
-  – added some minor styling into the base application.scss file
-    – .post styling for public post list
-    – taller textarea for edit page
+Whereas the original tutorial split routing into two folders public and authenticated routes, we have no need for a similar split in React Router. `routes.js` takes care of both public and authenticated routes.
 
-– App.js
-  – break out header navigation
-  – requireAuth takes care of auth flow routing
-  – note the default Base 4 behavior routes to /login, then routes back to the intended location, which is slightly different than the tutorial behavior where the <Login /> component is dropped in if the user's not authenticated
-  – also realize that in Base 4, every route is public by default. We have to add requireAuth to every private route
-  – added Meteor component to show Loading state if user is logging in
+* The `requireAuth` method takes care of auth flow routing in `routes.js`
+    * Note the default Base 4 behavior routes to `/login` first, then routes through to the intended location. This behavior differs from the tutorial where <Login /> is a component that appears on a page template for unauthenticated users. I decided to keep the Base 4 behavior for simplicity.
+    * added Meteor component to show Loading state if user is logging in
+* In Base 4, every route is __public by default__. We have to add `onEnter={ requireAuth }` to every private route. Don't assume that a route is safe just because it doesn't appear in Nav. Always make sure to protect private routes.
+
+##### App.js
+* This is the main container – all routes are passed through this all children as props 
+* Handle all navigation in navigation `AppNavigation.js`
   – extracted proptypes outside of the component (to be more similar to the other components)
 
+```
 – Public routes
   – /
-    – index, show all posts directly through Posts list, without a "homepage"
+    – index, show all posts directly through Posts list, without a "homepage" or landing page
     – <PostsIndex />
   – /posts/:slug
     – singlePost, show an individual post using its slug
@@ -110,12 +135,13 @@ Routing & Authentication
 
 – Authenticated routes
   – /posts
-    – for editing posts,
+    – for editing posts
     – <PostsList />
   – /posts/:_id/edit
     – editing individual post
     – <Editor />
   – added authRedirect component to routes to redirect logged in users to /posts
+```
 
 – Posts schema
   – added stricter Posts allow / deny rules to posts.js
@@ -166,6 +192,8 @@ Routing & Authentication
 
 ## Add-on: Handling Images
 
+Since many blogs have a file attachment or image requirement, I thought it would be fun to add file handling, and to push the boundaries of what I learned from the original [TheMeteorChef tutorial](https://themeteorchef.com/recipes/building-a-blog-with-react/).
+
 I also added file and image handling to this base tutorial, since images and files popular with blogs. Although one could use something like the Imgur API, I wanted to experiment with a fully native experience through the use of [file-collection](https://atmospherejs.com/vsivsi/file-collection) and gridFS.
 
 Goal: Add user-uploaded header images to each blog post, and a files list
@@ -185,13 +213,11 @@ Goal: Add user-uploaded header images to each blog post, and a files list
 
 
 
+{: id="appmap"}
+## App Map & Outline
 
-## Outline
--------------------------
+### App Outline
 
-(native meteor)
-
-Notes:
 – public, tests, server, clients – are all native meteor runtime folders
 – note that /import/ is supported for files dynamically imported
 – why are so many files named the same thing?? several files that do very different things are called 'documents'
@@ -288,6 +314,20 @@ Components  – a React partial that renders info, possibly data
           < /imports/modules/signup.js                      ## { handleSignup } Signup and user processing
             – get-input-value.js                            ## { getInputValue } very handy reusable module to get the refs from forms
 
+
+
+{: id="styling"}
+## Styling 
+
+– Styling should generally not care about how the app is organized
+– BUT you can run into conflicts, so we can encapsulate and compartmentalize by react components
+– avoid confusion when styling (easy to find where some class comes from, at the expense of a longer name)
+
+
+##### Styling
+Added some minor styling into the base `application.scss` file
+* .post styling for public post list
+*  taller textarea for edit page
 
 
 

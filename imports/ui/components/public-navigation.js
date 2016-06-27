@@ -14,6 +14,8 @@ export const PublicNavigation = () => (
     </Nav>
     <Nav pullRight>
     {/*
+      Don't allow for sign ups, since we run a private blog
+      
       <LinkContainer to="signup">
         <NavItem eventKey={ 1 } href="/signup">Sign Up</NavItem>
       </LinkContainer>

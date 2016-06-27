@@ -26,14 +26,6 @@ const users = [{
     },
     roles: ['admin'],
   },
-  {
-    email: 'banana@hdbuff.com',
-    password: 'banana',
-    profile: {
-      name: { first: 'Ban', last: 'Anna' },
-    },
-    roles: ['admin'],
-  }
 ];
 
 users.forEach(({ email, password, profile, roles }) => {
