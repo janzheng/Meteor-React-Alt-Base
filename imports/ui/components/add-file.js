@@ -23,12 +23,16 @@ export class AddFile extends React.Component {
 
   componentDidMount( component ) {
 
+    // initiates the drag and drop area and upload button
+    // to work with resumable. Resumable runs on jQuery
+    // so we use jQuery objects here
     let targetArea = $('#fileDropArea');
     let targetButton = $('#fileDropBtn');
 
     assignDrop(targetArea);
     assignBrowse(targetButton);
 
+    // starts the resumable upload event cycle
     handleUpload(this);
   }
 
@@ -36,39 +40,50 @@ export class AddFile extends React.Component {
 
     stopUpload(key);
 
-    // setting aborted = true kicks off the remove part of the fileProgress watch cycle
-    // this ensures we don't do handle anything outside of the upload cycle
+    // set the 'abort' flag to true
+    // used for showing "aborted" status
     let sessions = this.state.sessions;
     sessions[key].aborted = true;
     this.setState({sessions: sessions});
   }
 
-  renderStatus( ) {
 
+  /*
+
+    Render Status Method
+    ----
+
+    This method renders the list of current uploads (current file sessions)
+
+    Object.keys() converts an object into an array, which we can map and display.
+
+    The sessions object looks like:
+    {
+      123456:
+        filename: "filename",
+        progress: 50
+    }
+    – 123456 –    the file ID used by resumable for each upload
+    – progress –  as in "50%" – actively updated by resumable, from the handleUpload function in api/files/methods.js
+    – aborted –   only appears when user cancels an upload
+
+  */
+
+  renderStatus( ) {
     let sessions = this.state.sessions;
 
-    // check if the object is empty by converting the object into an array and counting the length
+    // check if the number of file sessions is empty by converting the object into an array and counting the length
     // the constructor check makes sure we're looking at an object
     let isEmpty = Object.keys(sessions).length === 0 && sessions.constructor === Object;
 
     return (
       !isEmpty ? <ListGroup className="sessions-list">
 
-        {/* 
-          Object.keys() converts an object into an array, which we can map and display.
-          The object looks like:
-          {
-            123456:
-              filename: "filename",
-              progress: 50
-          }
-          – 123456 is stored as the file id, and is always unique
-          – progress is actively update by resumable, from the handleUpload function in api/files/methods.js
-          the key is the
-        */}
         {Object.keys(sessions).map((key) => (
           <ListGroupItem key={ key }>
-            { this.state.sessions[key].aborted ? 'Canceled: ' : '' } { sessions[key].filename } [ { sessions[key].progress } { sessions[key].progress>-1 ? '%':''} ] { (sessions[key].progress < 100 && (!sessions[key].aborted)) ? <Button onClick={ this.triggerCancelUpload.bind(this, key) } > Cancel</Button> : ''}
+            { this.state.sessions[key].aborted ? 'Canceled: ' : '' }
+            { sessions[key].filename } [ { sessions[key].progress } '%' ] 
+            { (sessions[key].progress < 100 && (!sessions[key].aborted)) ? <Button onClick={ this.triggerCancelUpload.bind(this, key) }> Cancel</Button> : ''}
           </ListGroupItem>
         ))}
       </ListGroup> : ''

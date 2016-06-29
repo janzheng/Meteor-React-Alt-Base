@@ -9,78 +9,73 @@ import { Bert } from 'meteor/themeteorchef:bert';
   Much of this code was translated from the coffeescript example from
   vsivsi:file-collection which you can find: https://github.com/vsivsi/meteor-file-collection
 
-  There's a garbage collection bug in file-collection where aborted / canceled files don't get cleaned up properly
-  that I handle here
+  There's a garbage collection bug in file-collection where aborted / canceled files 
+  don't get cleaned up properly, so some of the garbage collection is handled here
+
+  Note that I don't properly clean for when a connection has been canceled 
+
+  Also note that I don't run the file methods through a validator and schema,
+  since I can rely on FileCollection to do that work
 */
+
+
 
 /*
-    don't run the file methods through validator and schema
-    – we rely on FileCollection to do all that work
+    External Methods
 */
 
-// This assigns a file upload drop zone to some DOM node
+// This assigns a file upload drag & drop zone to some DOM node
 export const assignDrop = (target) => {
   Files.resumable.assignDrop($(target));
 }
 
-// This assigns a browse action to a DOM node
+// This assigns a browse action to a DOM node ('upload' button)
 export const assignBrowse = (target) => {
   Files.resumable.assignBrowse($(target));
 }
 
 export const deleteFile = (fileId) => {
-  // console.log('deleting file: ' + fileId)
   Files.remove({_id: fileId});
 }
 
-// collection.remove({ $or: [{ "length": 0 }, { "metadata._Resumable": { $exists: true } }] });
-
-// deletes all resumable partials and 0 size files from Files (bug #77 – file-collection doesn't do this)
+// deletes all resumable partials and 0 size files from Files 
+// (bug #77 – file-collection doesn't do this)
 export const cleanAll = () => {
   // match userId (we can't delete other people's partially uploaded files!)
   // => then match length = 0, match metadata._Resumable exists
-  console.log('collecting garbage');
   let garbage = Files.find( { $and:  [
                                         {"metadata.owner": Meteor.userId()},
                                         {$or: [{ "length": 0 }, { "metadata._Resumable": { $exists: true } }] },
                                       ]
                             }).fetch();
-  console.log('clean up garbage...');
-  console.log(garbage)
+  // console.log('clean up garbage...');
+  // console.log(garbage)
 
+  // note that we can't delete files directly using Files.find(),
+  // so the list of items is returned in a garbage array, and then perform a deleteFile
+  // operation for each item in the garbage array
   garbage.forEach(function(item) {
-    console.log('deleting: ')
-    console.log(item)
     deleteFile(item._id);
   });
-
-}
-
-// deletes resumable partials and 0 size files from a given id Files (bug #77 – file-collection doesn't do this)
-export const cleanOne = (fileId) => {
 
 }
 
 // called externally (from add-file.js)
 export const stopUpload = (fileId) => {
   let file = Files.resumable.getFromUniqueIdentifier(fileId);
-  // Files.resumable.removeFile(file);
   cancelUpload(file);
 }
 
-// aborts and cleans up
+// aborts a single file upload
+// cleanup happens after all files have completed upload under the complete event
 export const cancelUpload = (file) => {
+  console.warn (`Canceling upload for : ${file.uniqueIdentifier}`);
+  Files.resumable.removeFile(file); // stops resumable from uploading the file
+  Files.remove({_id: file.uniqueIdentifier}); // removes the file stub
 
-  console.warn (`cleaning up canceled upload: ${file.uniqueIdentifier}`);
-  // console.log(Files.resumable)
-  // console.log(file)
-
-  // – aborts the Files.resumable upload
-  // Files.resumable.cancel();
-  Files.resumable.removeFile(file);
-  Files.remove({_id: file.uniqueIdentifier});
-  // cleanAll();
-  // Files.cleanup(file.uniqueIdentifier);
+  // at this point the database will still store the incomplete uploaded partials
+  // from this canceled upload. I clean up these partials when all downloads are completed
+  // (or canceled)
 }
 
 // tracks file handling (uploading and status) state using resumable
@@ -95,10 +90,11 @@ export const handleUpload = (component) => {
       username: username
     };
 
+    // 'src' is the postId, added for files added from a post
+    // posts will match the src with their postId to display files added specifically for that post 
     if(component.props.src) {
       metadata['src'] = component.props.src;
     }
-
 
     // Create a new file in the file collection to upload
     Files.insert({
@@ -119,26 +115,21 @@ export const handleUpload = (component) => {
   // Update the upload progress via component state variable
   Files.resumable.on ('fileProgress', function (file) {
     let sessions = component.state.sessions;
-    // resumable doesn't have a "onCancel" so we need to check if the object's been canceled
-    // instead of directly calling a function to reset the status and call cancelUpload,
-    // a flag is added to 'skip' aborted files from continuing its upload, since this
-    // function will still be running in the background as a reset function is called, potentially
-    // competing with the reset function.
+
+    // when cancel is called, the event fileProgress won't stop immediately
+    // we can check if the aborted flag exists, and if it does, we escape this loop
+    // so we can stop updating progress and don't replace the aborted flag
     if (sessions[file.uniqueIdentifier]) {
       if(sessions[file.uniqueIdentifier].aborted) {
-        // if the current file is aborted, abort and clean up the upload 
-        // this might also get called more than once, since it seems like resumable.removeFile doesn't trigger immediately
-        // to cancel the fileProgress event for this file
-        // cancelUpload(file);
         return 0; // escape the loop so we stop updating the file progress
       }
     }
-
+    // set a new session variable with the new state
+    // refer to add-file.js to see what this looks like
     sessions[file.uniqueIdentifier] = {
       filename: file.fileName,
       progress: Math.floor(100*file.progress())
     };
-    // console.log('fileProgress setstates')
     component.setState({sessions: sessions});
   });
 
@@ -148,27 +139,24 @@ export const handleUpload = (component) => {
     Bert.alert(`Error uploading: ${ file.fileName }`, 'warning');
   });
 
-
-  // Clear the state variable
-  Files.resumable.on ('catchall', function (event, file) {
-    // Bert.alert(`File uploaded: ${ file.fileName }`, 'success');
-    // console.log('catch all: ' + event)
-    // console.log(file)
-  });
-
   // Clear the state variable
   Files.resumable.on ('fileSuccess', function (file) {
     Bert.alert(`File uploaded: ${ file.fileName }`, 'success');
   });
 
+  // 'complete' will trigger when each individual file has been canceled
   Files.resumable.on ('complete', function (file) {
-      console.log('Resumable complete.')
-      cleanAll();
+      console.log('Resumable complete.');
+      // Debouncing necessary since resumable will still run a few cycles after onComplete
+      _.debounce(cleanAll, 1000);
   });
 
+  // 'cancel' only triggers when you call 'resumable.cancel' 
+  // This doesn't actually trigger in my app, but I include it as a fallback
   Files.resumable.on ('cancel', function (file) {
-      console.log('cancel event')
-      cleanAll();
+      console.log('Resumable cancelled.');
+      // Debouncing necessary since resumable will still run a few cycles after onComplete
+      _.debounce(cleanAll, 1000);
   });
 
 }

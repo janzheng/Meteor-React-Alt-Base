@@ -14,10 +14,17 @@ const composer = (params, onData) => {
 
   // Sending userId prevents a race condition
   $.cookie('X-Auth-Token', Accounts._storedLoginToken(), { path: '/' });
-  const dataSubscription = Meteor.subscribe('allData');
+  const dataSubscription = Meteor.subscribe('allChunks');
+
+
+  console.log('post-edit loading');
+  console.log(subscription);
+  console.log(dataSubscription);
+
+  // if (subscription.ready() && dataSubscription.ready()) {
 
   if (subscription.ready() && dataSubscription.ready()) {
-
+    console.log('post-edit ready');
     const post = Posts.findOne( { _id: params.id } );
     const file = Files.findOne( { "metadata.src": params.id} );
 

@@ -38,3 +38,4 @@ momentjs:moment
 react-meteor-data
 vsivsi:file-collection
 benjaminrh:jquery-cookie
+underscore

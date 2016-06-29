@@ -80,6 +80,7 @@ Posts.schema = new SimpleSchema({
 
 Posts.attachSchema(Posts.schema);
 
+
 /* added for extra safeguard */
 
 Posts.allow({
@@ -93,3 +94,4 @@ Posts.deny({
   update: () => true,
   remove: () => true
 });
+

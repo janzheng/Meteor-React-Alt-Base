@@ -95,8 +95,9 @@ Make sure you have all the required packages.
 1. Add commonmark: `meteor add themeteorchef:commonmark`
 1. Add momentjs: `meteor add momentjs:moment`
 
+### Overview
 
-### Setting Up Admin Users
+#### Setting Up Admin Users
 Since we're building a private blog, we make sure that `/signup` is unavailable and that we add our admins manually.
 
 * Remove `/signup` from `routes.js` and from `public-navigation.js`
@@ -105,7 +106,7 @@ Since we're building a private blog, we make sure that `/signup` is unavailable 
 * change the Application title to HD Buff in `/client/main.html` and in the nav `app-navigation.js`
 
 
-### Routing & Authentication
+#### Routing & Authentication
 
 Whereas the original tutorial split routing into two folders public and authenticated routes, we have no need for a similar split in React Router. `routes.js` takes care of both public and authenticated routes.
 
@@ -115,14 +116,7 @@ Whereas the original tutorial split routing into two folders public and authenti
 * In Base 4, every route is __public by default__. We have to add `onEnter={ requireAuth }` to every private route. Don't assume that a route is safe just because it doesn't appear in Nav. Always make sure to protect private routes.
 * Remember that order matters in routing. Authenticated routes should come before public routes, and the 404 catchall route should be at the end. 
 
-#### Organization
-
-##### App.js
-* This is the main container – all routes are passed through this all children as props 
-* Handle all navigation in navigation `AppNavigation.js`
-  – extracted proptypes outside of the component (to be more similar to the other components)
-
-###### Authenticated routes
+##### Authenticated routes
 * `/posts`
     * for posts for editing, and includes unpublished posts
     * `<PostsList />`
@@ -131,38 +125,49 @@ Whereas the original tutorial split routing into two folders public and authenti
     * `<Editor />`
   – added authRedirect component to routes to redirect logged in users to /posts
 
-###### Public Routes
+##### Public Routes
 * `/`
     * show all posts directly through Posts list, without a "homepage" or landing page
     * `<PostsIndex />`
 – `/login`
     * funny enough, if the `/tags/:tag` line is above `login`, `/tags/login` will resolve to the login screen
-    * `<Login />
+    * `<Login />`
 * `/posts/:slug`
     * readable URLs using the post slug, e.g. blog.com/posts/this-is-a-post
-    * `<SinglePost />
+    * `<SinglePost />`
 * `/tags/:tag`
     * show all posts by a tag, again using the PostsIndex component from before
     * `<PostsIndex />`
 * `/signup`
     * removed from Base since we're hard coding all accounts because this is a private blog
 
-– Posts schema
-  – added stricter Posts allow / deny rules to posts.js
-  – 
 
-– Displaying Posts
-  – 'Posts' has been added as a page for displaying posts
-  – 'PostsList' has been changed to a module
-  – 'posts-list' komposer container has been added
-  – note that "linked" has been removed, as every element resolves to "linked"
+##### App.js & Navigation
+* This is the main container – all routes are passed through this all children as props 
+* All navigation is handled in the `AppNavigation` component
+    * Note: proptypes are extracted to the outside of the component from Base 4, to be more similar to how proptypes are handled in other components
 
-  – map returned posts with more data like the tutorial though
-  – not a fan of mapping returned posts to an array and add uid, href and label like in the getMeteorData in the posts-list.jsx part of the tutorial 
-    – this convolutes the code. instead, we used the container merely to access the Post
-    – instead should use the PostsLists to break out all that info 
+##### Data Containers
+One of the differences between Base 4 and the tutorial is the use of `React-Komposer` containers to replace `getMeteorData()`. More information can be found [here](https://themeteorchef.com/snippets/using-react-komposer/). Basically `React-Komposer` does the same thing, but in a slightly different way. There's also a new official `Create Container` method by the Meteor Development Group. [Read more about it here](https://themeteorchef.com/snippets/using-create-container/#comment-2746738065).
 
-– Adding Posts
+Basically, the way containers work is that you `import` a component through a container. The container subscribes to a Meteor data collection, makes sure the data returned is expected, and passes the data along as props into the component.
+
+##### Documents
+* The Documents section has been included as a reference to Base 4, and has been completely untouched
+
+##### Posts API
+* Created a new `imports/api/posts` folder to handle blog posts
+* Posts schema
+    * added stricter Posts allow / deny rules to posts.js (Base 4.3 has these added as well for Documents)
+* Displaying Posts
+    * Route to `Posts` component added to `routes.js`
+    * `Posts` page component added displaying posts in a list called `PostsList`
+    * `PostsList` imported through komposer container `containers/posts-list.js`
+    * 'PostsList' added as component module
+    * The tutorial had a line `linked={ true }` when rendering `PostsList` that always seemed to resolve to true, so the line was removed 
+    * `containers/posts-list.js` follows the tutorial's suggestion to add additional data to the posts object returned from the `posts` collection
+        * I'm not sure if I'm a fan of adding data like `uid`, `href` and `label` like in the `getMeteorData` in the `posts-list.jsx` part of the tutorial. I think this information might be better suited to the display components than the data container component
+* Adding Posts
   – decided against using an add-post component and put all logic in posts.js for a new post
 
 – Editor
@@ -190,6 +195,49 @@ Whereas the original tutorial split routing into two folders public and authenti
   – added an if statement to prevent post body from displaying in post list
 
 
+##### Helpers
+
+* `get-input-value.js` – added a helper to get checked values
+
+
+
+
+
+
+
+### Naming & Organization
+
+All files are organized according to Base 4, so many of the files and folders are differently laid out than in the tutorial. I think it's for the better, as Base 4 has fewer files and folders, so finding what you need is less of a rabbit hunt.
+
+Naming is very important, as it can easily help developers, especially someone from outside the project, understand how everything fits together. The tutorial makes some hasty decisions on naming files, collections, and react components that can add to confusion. 
+
+For example, the component for displaying all public posts is called `PostsIndex` and the publication is named `postsIndex`, which makes it easy to understand that they're connected, but does not describe what the publication does.
+
+This sections shows my thinking in establishing a better pattern for understandability and searchability.
+
+
+
+#### Collections
+
+Collections are capitalized to indicate a collection. These aren't really used very often, except for when debugging using the Meteor Mongo interface, so they're ok being short.
+
+* `Posts` Collection
+* `Documents` Collection
+* `Files` Collection – note that the file-collection package uses the collection name as part of the URL by default, so the url would be `http://localhost:3000/gridfs/Files/[filename]`. However, it doesn't seem like file-collection is case-sensitive.
+
+
+
+#### Publications
+
+Meteor publications should be clear as to what information they yield. Publications should not be named for which components they'll exist in, but instead what kind of data they offer.
+
+###### Posts Publications
+* `posts` -> `allPosts`
+* `postsIndex` -> `publishedPosts`
+* `tagsIndex` -> `publishedPostsByTag`
+* `singlePost` -> `singlePostBySlug`
+* `singlePost` -> `singlePostBySlug`
+
 
 
 
@@ -204,6 +252,7 @@ Goal: Add user-uploaded header images to each blog post, and a files list
 
 * add file-collection `meteor add vsivsi:file-collection`
 * add jquery cookie `meteor add benjaminrh:jquery-cookie`
+* add underscore `meteor add underscore` – used for file-collection handling
 * create a new collection
   – update `/startup/server/api.js` with a references to `files` collection – '../../api/files/` ...
   – copy /posts/ into a new /files/ and rename references to files
@@ -217,7 +266,7 @@ Goal: Add user-uploaded header images to each blog post, and a files list
 
 
 
-{: id="appmap"}
+{: #appmap}
 ## App Map & Outline
 
 ### App Outline
@@ -320,7 +369,7 @@ Components  – a React partial that renders info, possibly data
 
 
 
-{: id="styling"}
+{: #styling}
 ## Styling 
 
 – Styling should generally not care about how the app is organized

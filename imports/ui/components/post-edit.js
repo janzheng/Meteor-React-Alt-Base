@@ -93,10 +93,11 @@ export class PostEdit extends React.Component {
   render() {
     let post = this.props.post;
     
-
     let updatedDate = moment( post.updated ).format( 'MMMM Do, YYYY hh:mm a' ),
         tags = post && post.tags ? post.tags.join( ', ' ) : null;
 
+    console.log('post-edit rendering');
+    
     // reminder that data loading is handled in the komposer container
 
     return (
