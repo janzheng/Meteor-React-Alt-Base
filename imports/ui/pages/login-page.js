@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Row, Col, FormGroup, ControlLabel, FormControl, Button, Alert } from 'react-bootstrap';
 import { handleLogin } from '../../modules/login';
 
-export class Login extends React.Component {
+export class LoginPage extends React.Component {
   componentDidMount() {
     handleLogin({ component: this });
   }

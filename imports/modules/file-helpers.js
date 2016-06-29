@@ -1,5 +1,11 @@
 
-import { Files } from '../api/files/files.js';
+/*
+
+    Helpers for Handling Files
+
+*/
+
+import { Files } from '../api/files/collection.js';
 
 //http://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable
 export const getReadableFileSizeString = (fileSizeInBytes) => {

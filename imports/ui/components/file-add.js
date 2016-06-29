@@ -1,13 +1,22 @@
+
+/*
+
+    Add a File to the Files collection
+    – works independently from the Files list
+    – the container can take an additional .src prop to denote a related post (not reflected in this component)
+
+*/
+
 import $ from 'jquery';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { FormGroup, FormControl, Col, Row, Button, ListGroup, ListGroupItem } from 'react-bootstrap';
 import { Bert } from 'meteor/themeteorchef:bert';
-import { assignBrowse, assignDrop, handleUpload, stopUpload } from '../../api/files/methods.js';
+import { assignBrowse, assignDrop, handleUpload, stopUpload, cleanAll } from '../../api/files/methods.js';
 
 
 
-export class AddFile extends React.Component {
+export class FileAdd extends React.Component {
 
   constructor(props) {
     super(props);
@@ -22,6 +31,9 @@ export class AddFile extends React.Component {
 
 
   componentDidMount( component ) {
+
+    // delete all the resumables
+    cleanAll();
 
     // initiates the drag and drop area and upload button
     // to work with resumable. Resumable runs on jQuery
@@ -82,8 +94,7 @@ export class AddFile extends React.Component {
         {Object.keys(sessions).map((key) => (
           <ListGroupItem key={ key }>
             { this.state.sessions[key].aborted ? 'Canceled: ' : '' }
-            { sessions[key].filename } [ { sessions[key].progress } '%' ] 
-            { (sessions[key].progress < 100 && (!sessions[key].aborted)) ? <Button onClick={ this.triggerCancelUpload.bind(this, key) }> Cancel</Button> : ''}
+            { sessions[key].filename } [ { sessions[key].progress }% ] { (sessions[key].progress < 100 && (!sessions[key].aborted)) ? <Button onClick={ this.triggerCancelUpload.bind(this, key) }>Cancel</Button> : ''}
           </ListGroupItem>
         ))}
       </ListGroup> : ''

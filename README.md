@@ -39,34 +39,6 @@ I also started a way to organize SCSS styling to adhere to React component organ
 
 
 
-## Todo
-
-* add a server / data / publication / methods "documentation"
-* draw the current "import" file tree in ReadMe
-* handle file upload disconnects (handle resume, or handle garbage collection on componentWillMount() )
-* add copious amounts of inline comments explaining every line (for others and your future self)
-* rename files to make more sense
-    * add file and posts structure to the map
-    * improve naming convention (e.g. posts-list is for authenticated posts, but file name doesn't reflect this)
-    * see if it makes any sense to move some stuff around or rename files to make more sense (api/posts/... for example don't have a base include file to organize everything) – make more human readable
-* organized SCSS naming scheme that matches new file component structure
-* a way to document component file relationships 
-* finish up the writeup into markdown
-* make more readable, and upload to github
-* post on MeteorChef 
-    * make a note in the original thread comments
-* make a note on vsivsi:file-collection github issue #77 on how I handled garbage collection
-    * see if I did it right / get tips from them (re: no resumable uploads, garbage collect user's resumables by uniqueId)
-
-### Done
-
-* add Bert to file upload and delete
-* add upload cancel
-* garbage collection of canceled files
-* hide signup, since this is only for crew
-    * hide the link on nav, hide the oute
-
-
 
 
 
@@ -84,6 +56,11 @@ The code is also fairly extensively commented to provide clarity.
 
 
 
+
+
+
+
+
 ### Preparation
 
 Make sure you have all the required packages.
@@ -94,6 +71,7 @@ Make sure you have all the required packages.
 1. Add speakingurl: `meteor add ongoworks:speakingurl`
 1. Add commonmark: `meteor add themeteorchef:commonmark`
 1. Add momentjs: `meteor add momentjs:moment`
+
 
 ### Overview
 
@@ -116,6 +94,7 @@ Whereas the original tutorial split routing into two folders public and authenti
 * In Base 4, every route is __public by default__. We have to add `onEnter={ requireAuth }` to every private route. Don't assume that a route is safe just because it doesn't appear in Nav. Always make sure to protect private routes.
 * Remember that order matters in routing. Authenticated routes should come before public routes, and the 404 catchall route should be at the end. 
 
+
 ##### Authenticated routes
 * `/posts`
     * for posts for editing, and includes unpublished posts
@@ -124,6 +103,7 @@ Whereas the original tutorial split routing into two folders public and authenti
     * editing an individual post
     * `<Editor />`
   – added authRedirect component to routes to redirect logged in users to /posts
+
 
 ##### Public Routes
 * `/`
@@ -147,15 +127,20 @@ Whereas the original tutorial split routing into two folders public and authenti
 * All navigation is handled in the `AppNavigation` component
     * Note: proptypes are extracted to the outside of the component from Base 4, to be more similar to how proptypes are handled in other components
 
+
 ##### Data Containers
-One of the differences between Base 4 and the tutorial is the use of `React-Komposer` containers to replace `getMeteorData()`. More information can be found [here](https://themeteorchef.com/snippets/using-react-komposer/). Basically `React-Komposer` does the same thing, but in a slightly different way. There's also a new official `Create Container` method by the Meteor Development Group. [Read more about it here](https://themeteorchef.com/snippets/using-create-container/#comment-2746738065).
+One of the differences between Base 4 and the tutorial is the use of `React-Komposer` containers to replace `getMeteorData()`. More information can be found [here](https://themeteorchef.com/snippets/using-react-komposer/). Basically `React-Komposer` does the same thing, but in a way that is more in line with React's principles. There's also a new official `Create Container` method by the Meteor Development Group. [Read more about it here](https://themeteorchef.com/snippets/using-create-container/#comment-2746738065).
 
 Basically, the way containers work is that you `import` a component through a container. The container subscribes to a Meteor data collection, makes sure the data returned is expected, and passes the data along as props into the component.
+
 
 ##### Documents
 * The Documents section has been included as a reference to Base 4, and has been completely untouched
 
-##### Posts API
+
+##### Posts
+The naming convention used in the tutorial was very confusing for me (e.g. `posts` referred to a list of authenticated posts as opposed to a list of all posts), so I've renamed many of the files, containers, pages, and components to be more descriptive. Unfortunately, this will make the tutorial harder to follow as filenames are now different.
+
 * Created a new `imports/api/posts` folder to handle blog posts
 * Posts schema
     * added stricter Posts allow / deny rules to posts.js (Base 4.3 has these added as well for Documents)
@@ -168,10 +153,10 @@ Basically, the way containers work is that you `import` a component through a co
     * `containers/posts-list.js` follows the tutorial's suggestion to add additional data to the posts object returned from the `posts` collection
         * I'm not sure if I'm a fan of adding data like `uid`, `href` and `label` like in the `getMeteorData` in the `posts-list.jsx` part of the tutorial. I think this information might be better suited to the display components than the data container component
 * Adding Posts
-  – decided against using an add-post component and put all logic in posts.js for a new post
+  * All post adding logic in `posts.js` for a new post, as opposed to a new `add-posts.js` file as there aren't many lines of code
 
-– Editor
-  – we get the postID from the react router, get it from the page as a parameter, then pass it into the post-edit.js 
+* Editor
+  * we get the postID from the react router, get it from the page as a parameter, then pass it into the post-edit.js 
   – renamed editor subscription from 'editor' to 'postById'
   – use FormControl for the editor pagedata container
   – post-edit.js: decided to leave post-edit calls together with the post-edit form
@@ -183,6 +168,8 @@ Basically, the way containers work is that you `import` a component through a co
   – added an update.js module to handle post edit updating;
   – added an ischecked function to the get-input-value file
   – added stricter validation schema for upsert
+
+– In order to be consistent with the tutorial, I've created `posts.js` which renders a list of posts in `posts-list.js`, but this unnecessarily seems to add more files / makes it convoluted
 
 – Post Index
   – added posts-index.js
@@ -209,12 +196,39 @@ Basically, the way containers work is that you `import` a component through a co
 
 All files are organized according to Base 4, so many of the files and folders are differently laid out than in the tutorial. I think it's for the better, as Base 4 has fewer files and folders, so finding what you need is less of a rabbit hunt.
 
-Naming is very important, as it can easily help developers, especially someone from outside the project, understand how everything fits together. The tutorial makes some hasty decisions on naming files, collections, and react components that can add to confusion. 
+Naming is very important, as it can easily help developers, especially someone from outside the project, understand how everything fits together. The tutorial makes some hasty decisions on naming files, collections, and react components that can add to confusion. It's important to remember that the ultimate goal is to keep things simple, understandable and easily maintainable, sometimes even at the cost of consistency.
 
 For example, the component for displaying all public posts is called `PostsIndex` and the publication is named `postsIndex`, which makes it easy to understand that they're connected, but does not describe what the publication does.
 
 This sections shows my thinking in establishing a better pattern for understandability and searchability.
 
+
+
+#### Components
+
+The tutorial used some very confusing names for components, containers, and pages regarding Posts. It's not clear at all that for example that `posts-list` is for authenticated users only. Names have been changed to indiciate better what the component does, and `__` is used to denote a differentiating attribute (for example authenticated vs. public post list). Attributes are attached to the end of a name (e.g. PostList__Auth) to keep the component name listed together in the file browser. 
+
+We should also take care to ensure that the Component name matches that of a file name, as this will make importing components more intuitive.
+
+##### Authenticated Post List
+* `posts-list.js` File -> `post-list__auth.js`
+* `PostsList` Component -> `PostList__Auth`
+
+##### Public Post List
+* `public-post.js` File -> `list-list__public.js`
+* `PublicPosts` Component -> `PostList__Public`
+
+
+
+
+#### /API/
+
+The API folder combines files for both the client and server. Although `methods.js` and `publications.js` are identically named, the Collection and Schema file (e.g. `posts.js`) are different, breaking consistency. I've renamed them `collection.js` to be consistent.
+
+Note that the /api/documents/ folder has been left alone
+
+* `api/files/files.js` -> `collection.js`
+* `api/posts/posts.js` -> `collection.js`
 
 
 #### Collections
@@ -236,9 +250,23 @@ Meteor publications should be clear as to what information they yield. Publicati
 * `postsIndex` -> `publishedPosts`
 * `tagsIndex` -> `publishedPostsByTag`
 * `singlePost` -> `singlePostBySlug`
-* `singlePost` -> `singlePostBySlug`
+* `editor` -> `singlePostById`
 
 
+#### Modules
+
+Modules are generally reusable methods and sometiems helper functions that reduce the amount of code squeezed into a component page. These files should either describe what the methods do, and not the component or file that imports them. 
+
+A component that needs to render something belongs in `/ui/components/`.
+
+
+#### Containers
+
+Containers wrap reactive Meteor data subscriptions around React components. As such, each container have a corresponding React component. Containers use the same name as their Component counterparts, but have been prefixed with `__` to clearly distinguish that these are containers, and that there is a component with the same name.
+
+#### Pages
+
+To avoid confusion between components and pages (especially in an editor like SublimeText), we attach `Page` to the end of each Page file. This makes the routes list in `routes.js` much easier to understand, as each route clearly points to a page.
 
 
 
@@ -381,6 +409,37 @@ Components  – a React partial that renders info, possibly data
 Added some minor styling into the base `application.scss` file
 * .post styling for public post list
 *  taller textarea for edit page
+
+
+
+
+## Todo
+
+* add a server / data / publication / methods "documentation"
+* draw the current "import" file tree in ReadMe
+* handle file upload disconnects (handle resume, or handle garbage collection on componentWillMount() )
+* add copious amounts of inline comments explaining every line (for others and your future self)
+* rename files to make more sense
+    * add file and posts structure to the map
+    * improve naming convention (e.g. posts-list is for authenticated posts, but file name doesn't reflect this)
+    * see if it makes any sense to move some stuff around or rename files to make more sense (api/posts/... for example don't have a base include file to organize everything) – make more human readable
+* organized SCSS naming scheme that matches new file component structure
+* a way to document component file relationships 
+* finish up the writeup into markdown
+* make more readable, and upload to github
+* post on MeteorChef 
+    * make a note in the original thread comments
+* make a note on vsivsi:file-collection github issue #77 on how I handled garbage collection
+    * see if I did it right / get tips from them (re: no resumable uploads, garbage collect user's resumables by uniqueId)
+
+
+### Done
+
+* add Bert to file upload and delete
+* add upload cancel
+* garbage collection of canceled files
+* hide signup, since this is only for crew
+    * hide the link on nav, hide the oute
 
 
 

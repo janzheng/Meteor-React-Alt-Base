@@ -1,10 +1,20 @@
+
+/*
+
+    Render each File in a list of files
+
+*/
+
 import React from 'react';
 import { ListGroupItem, Thumbnail, Row, Col, Button } from 'react-bootstrap';
-import { Files } from '../../api/files/files.js';
-import { isTypeImage, getReadableFileSizeString } from '../../modules/helpers.js';
-import { deleteFile } from '../../api/files/methods.js';
-import PostName from '../containers/post-name.js';
-import Post from '../containers/single-post.js';
+
+// file handling helpers
+import { Files } from '../../api/files/collection';
+import { isTypeImage, getReadableFileSizeString } from '../../modules/file-helpers';
+import { deleteFile } from '../../api/files/methods';
+
+// get post information associated with a file
+import PostName from '../containers/__post-name';
 
 
 const renderAppearsIn = (file) => {
@@ -21,8 +31,6 @@ const renderAppearsIn = (file) => {
 const handleDelete = (file) => {
   deleteFile(file._id)
 }
-
-
 
 const renderImage = (isImage, link) => {
   if(isImage) {
@@ -41,8 +49,6 @@ export const File = ( props ) => {
   let contentType = file.contentType;
   let isImage = isTypeImage(contentType);
   let params = props.params;
-
-  // console.log(file)
 
   return (
     <ListGroupItem key={ file._id }>

@@ -12,7 +12,7 @@ const userName = () => {
   return user ? `${name.first} ${name.last}` : '';
 };
 
-export const AuthenticatedNavigation = () => (
+export const Navigation__Authenticated = () => (
   <div>
     <Nav>
       <IndexLinkContainer to="/">

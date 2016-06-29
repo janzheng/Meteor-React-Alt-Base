@@ -1,30 +1,39 @@
-import { composeWithTracker } from 'react-komposer';
-import { Files } from '../../api/files/files.js';
-import { cookie } from 'meteor/ongoworks:speakingurl';
-import { Posts } from '../../api/posts/posts.js';
-import { PostEdit } from '../components/post-edit.js';
-import { Loading } from '../components/loading.js';
+
+/*
+
+    Container for PostEdit
+    – Edit an existing, individual post
+
+*/
+
 import { Meteor } from 'meteor/meteor';
+import { composeWithTracker } from 'react-komposer';
+import { cookie } from 'meteor/ongoworks:speakingurl';
+
+import { Files } from '../../api/files/collection';
+import { Posts } from '../../api/posts/collection';
+
+import { PostEdit } from '../components/post-edit';
+import { Loading } from '../components/loading';
 
 const composer = (params, onData) => {
 
   let userId = Meteor.userId();
 
-  const subscription = Meteor.subscribe('postById', params.id);
+  const subscription = Meteor.subscribe('singlePostById', params.id);
 
   // Sending userId prevents a race condition
   $.cookie('X-Auth-Token', Accounts._storedLoginToken(), { path: '/' });
-  const dataSubscription = Meteor.subscribe('allChunks');
+  const dataSubscription = Meteor.subscribe('allDataChunks');
 
-
-  console.log('post-edit loading');
-  console.log(subscription);
-  console.log(dataSubscription);
+  // console.log('post-edit loading');
+  // console.log(subscription);
+  // console.log(dataSubscription);
 
   // if (subscription.ready() && dataSubscription.ready()) {
 
   if (subscription.ready() && dataSubscription.ready()) {
-    console.log('post-edit ready');
+    // console.log('post-edit ready');
     const post = Posts.findOne( { _id: params.id } );
     const file = Files.findOne( { "metadata.src": params.id} );
 

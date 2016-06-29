@@ -1,3 +1,11 @@
+
+/*
+
+    Edit an Existing Post
+    – (authenticated only)
+
+*/
+
 import React from 'react';
 
 // import ReactDOM from 'react-dom'; // refer to the note 
@@ -5,15 +13,14 @@ import { FormGroup, FormControl, ControlLabel, Button, Checkbox, Alert, Grid, Ro
 import { Bert } from 'meteor/themeteorchef:bert';
 import { moment } from 'meteor/momentjs:moment';
 import { getSlug } from 'meteor/ongoworks:speakingurl';
-import { getFileURL } from '../../modules/helpers';
 
-// file handling
-import { AddFile } from '../components/add-file.js';
-import { deleteFile } from '../../api/files/methods.js';
+// File handling for adding images
+import { getFileURL } from '../../modules/file-helpers';
+import { FileAdd } from '../components/file-add';
+import { deleteFile } from '../../api/files/methods';
 
 // Update Handler
-import { handleUpdate } from '../../modules/update';
-// import { updatePost } from '../../api/posts/methods.js';
+import { PostUpdate } from '../../modules/post-update';
 
 
 // export const PostEdit = ({ post }) => ( // we're using states and refs, so PostEdit can't be stateless :(
@@ -35,12 +42,11 @@ export class PostEdit extends React.Component {
   }
 
   componentDidMount() {
-    handleUpdate({ postEdit: this });
+    PostUpdate({ postEdit: this });
   }
 
   handleSubmit( event ) {
     event.preventDefault();
-    // handleUpdate({ postEdit: this });
   }
 
   generateSlug( event ) {
@@ -86,7 +92,7 @@ export class PostEdit extends React.Component {
         </div>
       );
     } else {
-      return <div className="margin-bottom" ><AddFile src={ this.props.post._id } title="Add an Image" /></div>;
+      return <div className="margin-bottom" ><FileAdd src={ this.props.post._id } title="Add an Image" /></div>;
     }
   }
 
@@ -95,11 +101,7 @@ export class PostEdit extends React.Component {
     
     let updatedDate = moment( post.updated ).format( 'MMMM Do, YYYY hh:mm a' ),
         tags = post && post.tags ? post.tags.join( ', ' ) : null;
-
-    console.log('post-edit rendering');
-    
-    // reminder that data loading is handled in the komposer container
-
+        
     return (
       <div>
         <Alert>Editing: { post.title }</Alert>

@@ -2,7 +2,7 @@ import React from 'react';
 import { ListGroup, Alert, Col, Row } from 'react-bootstrap';
 import { File } from './file.js';
 
-export const FilesList = ({ files }) => (
+export const FileList = ({ files }) => (
     files.length > 0 ? <div className="files-list">
       
       <Row>
@@ -20,6 +20,6 @@ export const FilesList = ({ files }) => (
     <Alert bsStyle="warning">No files yet.</Alert>
 );
 
-FilesList.propTypes = {
+FileList.propTypes = {
   files: React.PropTypes.array,
 };

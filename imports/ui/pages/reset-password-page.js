@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Col, Alert, FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap';
 import { handleResetPassword } from '../../modules/reset-password';
 
-export class ResetPassword extends React.Component {
+export class ResetPasswordPage extends React.Component {
   componentDidMount() {
     handleResetPassword({
       component: this,
@@ -48,6 +48,6 @@ with your new password.
   }
 }
 
-ResetPassword.propTypes = {
+ResetPasswordPage.propTypes = {
   params: React.PropTypes.object,
 };

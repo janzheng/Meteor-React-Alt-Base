@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Row, Col, FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap';
 import { handleSignup } from '../../modules/signup';
 
-export class Signup extends React.Component {
+export class SignupPage extends React.Component {
   componentDidMount() {
     handleSignup({ component: this });
   }

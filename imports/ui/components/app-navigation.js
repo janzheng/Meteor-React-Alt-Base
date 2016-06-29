@@ -1,12 +1,12 @@
 import React from 'react';
 import { Navbar } from 'react-bootstrap';
 import { Link } from 'react-router';
-import { PublicNavigation } from './public-navigation';
-import { AuthenticatedNavigation } from './authenticated-navigation';
+import { Navigation__Public } from './navigation__public';
+import { Navigation__Authenticated } from './navigation__authenticated';
 
 export class AppNavigation extends React.Component {
   renderNavigation(hasUser) {
-    return hasUser ? <AuthenticatedNavigation /> : <PublicNavigation />;
+    return hasUser ? <Navigation__Authenticated /> : <Navigation__Public />;
   }
 
   render() {

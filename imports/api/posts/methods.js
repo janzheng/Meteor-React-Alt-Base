@@ -1,4 +1,4 @@
-import { Posts } from './posts';
+import { Posts } from './collection';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 

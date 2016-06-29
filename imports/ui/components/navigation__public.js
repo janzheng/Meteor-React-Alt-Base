@@ -2,8 +2,9 @@ import React from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Nav, NavItem } from 'react-bootstrap';
 
-export const PublicNavigation = () => (
+export const Navigation__Public = () => (
   <div>
+  {/*
     <Nav>
       <LinkContainer to="/documents">
         <NavItem eventKey={ 3 } href="/documents">Documents</NavItem>
@@ -12,6 +13,7 @@ export const PublicNavigation = () => (
         <NavItem eventKey={ 4 } href="/files">Files</NavItem>
       </LinkContainer>
     </Nav>
+  */}
     <Nav pullRight>
     {/*
       Don't allow for sign ups, since we run a private blog

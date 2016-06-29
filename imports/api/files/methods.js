@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { Files } from './files';
+import { Files } from './collection';
 import { Meteor } from 'meteor/meteor';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
@@ -34,7 +34,8 @@ export const assignBrowse = (target) => {
   Files.resumable.assignBrowse($(target));
 }
 
-export const deleteFile = (fileId) => {
+export const deleteFile = (fileId, trash) => {
+  if (trash) console.log('removing trash: ' + fileId)
   Files.remove({_id: fileId});
 }
 
@@ -43,11 +44,16 @@ export const deleteFile = (fileId) => {
 export const cleanAll = () => {
   // match userId (we can't delete other people's partially uploaded files!)
   // => then match length = 0, match metadata._Resumable exists
+
+  // console.log('cleanAll function -------------');
+
   let garbage = Files.find( { $and:  [
                                         {"metadata.owner": Meteor.userId()},
                                         {$or: [{ "length": 0 }, { "metadata._Resumable": { $exists: true } }] },
                                       ]
                             }).fetch();
+
+  // garbage = Files.find({}).fetch();
   // console.log('clean up garbage...');
   // console.log(garbage)
 
@@ -55,12 +61,12 @@ export const cleanAll = () => {
   // so the list of items is returned in a garbage array, and then perform a deleteFile
   // operation for each item in the garbage array
   garbage.forEach(function(item) {
-    deleteFile(item._id);
+    deleteFile(item._id, true);
   });
 
 }
 
-// called externally (from add-file.js)
+// called externally (from file-add.js)
 export const stopUpload = (fileId) => {
   let file = Files.resumable.getFromUniqueIdentifier(fileId);
   cancelUpload(file);
@@ -72,6 +78,9 @@ export const cancelUpload = (file) => {
   console.warn (`Canceling upload for : ${file.uniqueIdentifier}`);
   Files.resumable.removeFile(file); // stops resumable from uploading the file
   Files.remove({_id: file.uniqueIdentifier}); // removes the file stub
+
+  // Wait is necessary since resumable will still run a few cycles after onComplete
+  _.delay(cleanAll, 1000);
 
   // at this point the database will still store the incomplete uploaded partials
   // from this canceled upload. I clean up these partials when all downloads are completed
@@ -114,23 +123,27 @@ export const handleUpload = (component) => {
 
   // Update the upload progress via component state variable
   Files.resumable.on ('fileProgress', function (file) {
-    let sessions = component.state.sessions;
 
-    // when cancel is called, the event fileProgress won't stop immediately
-    // we can check if the aborted flag exists, and if it does, we escape this loop
-    // so we can stop updating progress and don't replace the aborted flag
-    if (sessions[file.uniqueIdentifier]) {
-      if(sessions[file.uniqueIdentifier].aborted) {
-        return 0; // escape the loop so we stop updating the file progress
+    if(component) {
+      let sessions = component.state.sessions;
+
+      // when cancel is called, the event fileProgress won't stop immediately
+      // we can check if the aborted flag exists, and if it does, we escape this loop
+      // so we can stop updating progress and don't replace the aborted flag
+      if (sessions[file.uniqueIdentifier]) {
+        if(sessions[file.uniqueIdentifier].aborted) {
+          return 0; // escape the loop so we stop updating the file progress
+        }
       }
+      // set a new session variable with the new state
+      // refer to file-add.js to see what this looks like
+      sessions[file.uniqueIdentifier] = {
+        filename: file.fileName,
+        progress: Math.floor(100*file.progress())
+      };
+      component.setState({sessions: sessions});
     }
-    // set a new session variable with the new state
-    // refer to add-file.js to see what this looks like
-    sessions[file.uniqueIdentifier] = {
-      filename: file.fileName,
-      progress: Math.floor(100*file.progress())
-    };
-    component.setState({sessions: sessions});
+    
   });
 
   // Not very robust
@@ -144,20 +157,6 @@ export const handleUpload = (component) => {
     Bert.alert(`File uploaded: ${ file.fileName }`, 'success');
   });
 
-  // 'complete' will trigger when each individual file has been canceled
-  Files.resumable.on ('complete', function (file) {
-      console.log('Resumable complete.');
-      // Debouncing necessary since resumable will still run a few cycles after onComplete
-      _.debounce(cleanAll, 1000);
-  });
-
-  // 'cancel' only triggers when you call 'resumable.cancel' 
-  // This doesn't actually trigger in my app, but I include it as a fallback
-  Files.resumable.on ('cancel', function (file) {
-      console.log('Resumable cancelled.');
-      // Debouncing necessary since resumable will still run a few cycles after onComplete
-      _.debounce(cleanAll, 1000);
-  });
 
 }
 

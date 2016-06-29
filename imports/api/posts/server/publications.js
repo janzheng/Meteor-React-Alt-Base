@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { Posts } from '../posts';
+import { Posts } from '../collection';
 
 
 // get all posts
-Meteor.publish('posts', () => Posts.find());
+Meteor.publish('allPosts', () => Posts.find());
 
 // get all public posts (used to display posts on the homepage)
-Meteor.publish('postsIndex', () => Posts.find( { published: true } ));
+Meteor.publish('publishedPosts', () => Posts.find( { published: true } ));
 
 // get all posts by tag
-Meteor.publish('tagsIndex', ( tag ) => {
+Meteor.publish('publishedPostsByTag', ( tag ) => {
   check( tag, String );
   return Posts.find( { published: true, tags: { $in: [ tag ] } } );
 });
@@ -21,7 +21,7 @@ Meteor.publish( 'singlePost', ( postSlug ) => {
 });
 
 // get one post by id (used by the editor to retrieve posts)
-Meteor.publish('postById', ( postId ) => {
+Meteor.publish('singlePostById', ( postId ) => {
   check( postId, String );
 
   return [

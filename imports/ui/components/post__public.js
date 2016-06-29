@@ -1,11 +1,25 @@
+
+/*
+
+    Render a Post
+    – each post rendered in a list of posts
+    – if 'singlePost' – the specific post at a slug
+
+*/
+
 import React from 'react';
-import { getFileURL } from '../../modules/helpers';
+
 import { moment } from 'meteor/momentjs:moment';
 import { parseMarkdown } from 'meteor/themeteorchef:commonmark';
 import { Row, Col, Image } from 'react-bootstrap';
 
+// file handling
+import { getFileURL, isTypeImage } from '../../modules/file-helpers';
+
+// if a file exists, we display it as a header image
 const renderImage = ( file ) => {
-  if( file ) {
+
+  if( file && isTypeImage(file.contentType) ) {
     let link = getFileURL(file);
     return (
       <Row>
@@ -17,8 +31,8 @@ const renderImage = ( file ) => {
   } 
 };
 
-const getPostTitle = ( post, props ) => {
 
+const getPostTitle = ( post, props ) => {
   if ( props.singlePost ) {
     return <h3>{ post.title }</h3>;
   } else {
@@ -27,6 +41,7 @@ const getPostTitle = ( post, props ) => {
     )
   }
 };
+
 
 const renderTags = ( post ) => {
   let tags = post.tags;
@@ -42,6 +57,7 @@ const renderTags = ( post ) => {
     )
   }
 };
+
 
 const renderBody = ( post, props ) => {
 
@@ -59,14 +75,12 @@ const renderBody = ( post, props ) => {
   }
 }
 
-export const Post = ( props ) => {
+
+export const Post__Public = ( props ) => {
 
   let post = props.post;
   let file = props.file
   let params = props.params;
-
-  console.log('single post file ---')
-  console.log(file);
 
   return (
     <div className="post">
@@ -78,3 +92,4 @@ export const Post = ( props ) => {
       { renderBody( post, props ) }
     </div>
 )};
+

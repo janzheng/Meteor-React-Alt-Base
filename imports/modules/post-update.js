@@ -47,7 +47,7 @@ const validate = () => {
 };
 
 
-export const handleUpdate = (props) => {
+export const PostUpdate = (props) => {
   postEdit = props.postEdit;
   validate();
 };

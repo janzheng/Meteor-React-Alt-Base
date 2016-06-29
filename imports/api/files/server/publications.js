@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { Files } from '../files';
+import { Files } from '../collection';
 
 // we need to explose all chunks to the client instead of just the data for garbage collection
-Meteor.publish('allChunks', () => Files.find({}));
-// Meteor.publish('allData', () => Files.find({$and: [{ "length": {$ne: 0} }, { "metadata._Resumable": { $exists: false } }] }));
+Meteor.publish('allDataChunks', () => Files.find({}));
+
+// all files (excluding chunks and file headers)
+Meteor.publish('allFiles', () => Files.find({$and: [{ "length": {$ne: 0} }, { "metadata._Resumable": { $exists: false } }] }));
 
 
 // Allow rules for security. Without these, no writes would be allowed by default

@@ -1,7 +1,15 @@
+
+/*
+
+    Displays a list of posts for authenticated users
+    – Each post's URL links to the edit page of the post
+
+*/
+
 import React from 'react';
 import { ListGroup, ListGroupItem, Alert } from 'react-bootstrap';
 
-export const PostsList = ({ posts }) => (
+export const PostList__Auth = ({ posts }) => (
   posts.length > 0 ? <ListGroup className="posts-list">
     {posts.map((post) => (
       <ListGroupItem key={ post.uid } href={ post.href }>
@@ -12,6 +20,6 @@ export const PostsList = ({ posts }) => (
   <Alert bsStyle="warning">No posts found.</Alert>
 );
 
-PostsList.propTypes = {
+PostList__Auth.propTypes = {
   posts: React.PropTypes.array,
 };

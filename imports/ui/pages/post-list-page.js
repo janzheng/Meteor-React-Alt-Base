@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Row, Col, Jumbotron } from 'react-bootstrap';
-import PublicPosts from '../containers/public-posts.js';
+import PostList__Public from '../containers/__post-list__public.js';
 
 
 const renderHeader = (params) => {
@@ -20,13 +20,13 @@ const renderHeader = (params) => {
   }
 }
 
-export const PostsIndex = ( { params } ) => (
+export const PostListPage = ( { params } ) => (
   <div className="posts">
     <Row>
       <Col xs={12} sm={8} smOffset={2} >
         <h4 className="page-header">Posts</h4>
         { renderHeader( params ) }
-        <PublicPosts tag={ params.tag } />
+        <PostList__Public tag={ params.tag } />
       </Col>
     </Row>
   </div>

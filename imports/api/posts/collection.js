@@ -13,8 +13,8 @@ export const Posts = new Mongo.Collection('Posts');
   – this.isUpsert Is the operation being performed an upsert?
   – this.userId   Get access to the currently logged in user’s ID. This is null if the action being performed originated from the server (e.g. we perform an update in a method).
   – this.isFromTrustedCode  
-
 */
+
 Posts.schema = new SimpleSchema({
   "published": {
     type: Boolean,
