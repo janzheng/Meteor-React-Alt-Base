@@ -301,14 +301,14 @@ The App Map doesn't show the file structure, but the `import` structure of files
 * `api/server/` is important to differentiate between client-side and server-side data functionality
 
 
-##### General Meteor
+#### General Meteor
 
 ```
 - public/                                                   # public images and assets
 - tests/                                                    # unit tests
 ```
 
-##### Server Side
+#### Server Side
 
 ```
 ∟ denotes an import
@@ -340,7 +340,7 @@ server/                                                     # Meteor server runt
 
 
 
-##### Client Side
+#### Client Side
 
 ```
 ∟ denotes an import
@@ -375,7 +375,7 @@ client/                                                       # Meteor client ru
 
         Authenticated Routes
 
-        ∟ [pages]/documents                                   # { Documents } Base example.
+        ∟ [pages] documents                                   # { Documents } Base example.
           ∟ [components] add-document.js                      # Add new documents component
             ∟ [Documents] methods.js                          # { insertDocument }
           ∟ [containers] __documents-list.js                  # Data container for { DocumentsList }
@@ -450,7 +450,6 @@ client/                                                       # Meteor client ru
               ∟ [components] post__public.js                # { Post__Public } render posts in a list
                 ∟ [modules] file-helpers.js                 # { getFileURL, isTypeImage }
 
-
         ∟ [pages] post-single-page.js                       # { PostSinglePage } public single post from slug
           ∟ [containers] __post-single__public              # data container for a single post
             ∟ [Files] collection.js                         # File data for images
@@ -460,7 +459,7 @@ client/                                                       # Meteor client ru
               ∟ [components] post__public.js                # { Post__Public } render posts individually
                 ∟ [modules] file-helpers.js                 # { getFileURL, isTypeImage }
 
-
+```
 
 ## Styling 
 
