@@ -35,7 +35,7 @@ const composer = (params, onData) => {
   if (subscription.ready() && dataSubscription.ready()) {
     // console.log('post-edit ready');
     const post = Posts.findOne( { _id: params.id } );
-    const file = Files.findOne( { "metadata.src": params.id} );
+    const file = Files.findOne( { $and: [{ "metadata.src": params.id}, { "length": {$ne: 0} }, { "metadata._Resumable": { $exists: false } }] } );
 
 
     // const post = Posts.find().fetch().map( ( post ) => {

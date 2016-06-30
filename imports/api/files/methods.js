@@ -6,16 +6,16 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { Bert } from 'meteor/themeteorchef:bert';
 
 /*
-  Much of this code was translated from the coffeescript example from
-  vsivsi:file-collection which you can find: https://github.com/vsivsi/meteor-file-collection
+    Much of this code was translated from the coffeescript example from
+    vsivsi:file-collection which you can find: https://github.com/vsivsi/meteor-file-collection
 
-  There's a garbage collection bug in file-collection where aborted / canceled files 
-  don't get cleaned up properly, so some of the garbage collection is handled here
+    There's a garbage collection bug in file-collection where aborted / canceled files 
+    don't get cleaned up properly, so some of the garbage collection is handled here
 
-  Note that I don't properly clean for when a connection has been canceled 
+    Note that I don't properly clean for when a connection has been canceled 
 
-  Also note that I don't run the file methods through a validator and schema,
-  since I can rely on FileCollection to do that work
+    Also note that I don't run the file methods through a validator and schema,
+    since I can rely on FileCollection to do that work
 */
 
 

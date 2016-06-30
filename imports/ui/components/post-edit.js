@@ -38,10 +38,11 @@ export class PostEdit extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.generateSlug = this.generateSlug.bind(this);
     this.renderImage = this.renderImage.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
+    this.deleteFile = this.deleteFile.bind(this);
   }
 
   componentDidMount() {
+    // this module will be called when the form is submitted
     PostUpdate({ postEdit: this });
   }
 
@@ -62,14 +63,10 @@ export class PostEdit extends React.Component {
     // – note that _it is ALSO bad form_ to convert all props into state values
     //   state values are only supposed to use with Component-specific calculated values
     //   in this case, the slug is calculated from the prop post.title
-
-    // – to set by ref, we set a string ref on the FormControl
-    // ReactDOM.findDOMNode(this.refs.slugRef).value = slug
   }
 
 
-  handleDelete() {
-    console.log('handle delete triggered')
+  deleteFile() {
     let file = this.props.file;
     deleteFile(file._id)
   }
@@ -78,7 +75,6 @@ export class PostEdit extends React.Component {
     let file = this.props.file;
     if (file) {
       let link = getFileURL(file);
-      console.log('render image url: ' + link)
 
       return (
         <div>
@@ -86,7 +82,7 @@ export class PostEdit extends React.Component {
           <Button
             className="post-remove-image"
             bsStyle="default"
-            onClick={ this.handleDelete }>
+            onClick={ this.deleteFile }>
             Remove Image
           </Button>
         </div>

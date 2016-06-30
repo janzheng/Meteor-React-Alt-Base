@@ -9,6 +9,7 @@ If you're using this as a learning tool, read [the original tutorial first](http
 
 For amazing tutorials, please check out all the other free resources at [TheMeteorChef](https://themeteorchef.com).
 
+> The documentation is still a work in progress
 
 
 ## Building a Blog with React
@@ -17,7 +18,7 @@ The major differences from TheMeteorChef tutorial are using React Router instead
 
 Base 4 is significantly simpler and better organized, but the way some files are named can be confusing, so I've tried to improve the naming experience.
 
-Please [email me at hello@janzheng](hello@janzhengs) with suggestions, questions, comments, and bugs
+Please [email me at hello@janzheng](hello@janzhengs) with suggestions, questions, comments, and bugs.
 
 A project by [Jan Zheng](http://janzheng.com)
 
@@ -28,11 +29,11 @@ A project by [Jan Zheng](http://janzheng.com)
 I also added file and image handling to this base tutorial, since images and files popular with blogs. Although one could use something like the Imgur API, I wanted to experiment with a fully native experience through the use of [file-collection](https://atmospherejs.com/vsivsi/file-collection) and gridFS.
 
 
-### Application Structure Organization
+### Organization
 
 Even with Base 4's adherence to the new application structure per the [Meteor Guide](https://guide.meteor.com/structure.html) things get confusing very quickly. I've attempted to alleviate the confusion between file names through file naming conventions, yet still adhering to the Meteor Guide.
 
-To make better sense of how a Meteor + React app is organized, I've attempted to map out the way files include each other. Check out the [App Map & Outline](#appmap).
+To make better sense of how a Meteor + React app is organized, I've attempted to map out the way files include each other. Check out the [Organization](#organization) section and the [App Map & Outline](#appmap).
 
 I also started a way to organize SCSS styling to adhere to React component organization with a BEM-like syntax. Check out the [Styling section](#styling).
 
@@ -54,7 +55,7 @@ This app is at the core very similar to the original tutorial app on TheMeteorCh
 
 The code is also fairly extensively commented to provide clarity.
 
-
+Note that I've renamed, reorganized, and refactored many of the files, components, containers, pages, and so on to be more descriptive than their counterparts in the tutorial, and might also be slightly different from Base as well.
 
 
 
@@ -82,6 +83,7 @@ Since we're building a private blog, we make sure that `/signup` is unavailable 
 * Manually add users to `/startup/server/fixtures.js`
     * Note that fixtures has been changed to account for user roles (pun!) 
 * change the Application title to HD Buff in `/client/main.html` and in the nav `app-navigation.js`
+* This example uses `extends React.Component` instead of `React.createClasss`. [Read more](https://toddmotto.com/react-create-class-versus-component/)
 
 
 #### Routing & Authentication
@@ -142,44 +144,35 @@ Basically, the way containers work is that you `import` a component through a co
 The naming convention used in the tutorial was very confusing for me (e.g. `posts` referred to a list of authenticated posts as opposed to a list of all posts), so I've renamed many of the files, containers, pages, and components to be more descriptive. Unfortunately, this will make the tutorial harder to follow as filenames are now different.
 
 * Created a new `imports/api/posts` folder to handle blog posts
+    * the `/api/` folder holds the collection and schema, publications, as well as insert, update, and remove methods for handling posts.
 * Posts schema
-    * added stricter Posts allow / deny rules to posts.js (Base 4.3 has these added as well for Documents)
+    * added stricter Posts allow / deny rules to `posts/collection.js` (the latest Base 4.3 has these added as well for Documents)
 * Displaying Posts
-    * Route to `Posts` component added to `routes.js`
-    * `Posts` page component added displaying posts in a list called `PostsList`
-    * `PostsList` imported through komposer container `containers/posts-list.js`
-    * 'PostsList' added as component module
+    * Route to `PostEditlistPage` added to `routes.js` for listing posts for authenticated users (originally this was called `Posts`)
+    * `Added a component for displaying a list of authenticated posts `PostList__Auth` (originally `PostsList`)
+    * `PostList__Auth` imported through komposer container `containers/post-list__auth.js`
     * The tutorial had a line `linked={ true }` when rendering `PostsList` that always seemed to resolve to true, so the line was removed 
-    * `containers/posts-list.js` follows the tutorial's suggestion to add additional data to the posts object returned from the `posts` collection
+    * `containers/post-list__auth.js` follows the tutorial's suggestion to add additional data to the posts object returned from the `Posts` collection
         * I'm not sure if I'm a fan of adding data like `uid`, `href` and `label` like in the `getMeteorData` in the `posts-list.jsx` part of the tutorial. I think this information might be better suited to the display components than the data container component
 * Adding Posts
-  * All post adding logic in `posts.js` for a new post, as opposed to a new `add-posts.js` file as there aren't many lines of code
-
-* Editor
-  * we get the postID from the react router, get it from the page as a parameter, then pass it into the post-edit.js 
-  – renamed editor subscription from 'editor' to 'postById'
-  – use FormControl for the editor pagedata container
-  – post-edit.js: decided to leave post-edit calls together with the post-edit form
-    – uses login.js way of validating, getting input values
-    – PostEdit can't be stateless, so we use ES6 syntax to extend React.Component
-  – new post method called updatePost takes an object post, validates if object
-  – define the calculations within render() instead of using a ton of helper functions for readability
-  – note on setting by ref and setting using state
-  – added an update.js module to handle post edit updating;
-  – added an ischecked function to the get-input-value file
-  – added stricter validation schema for upsert
-
-– In order to be consistent with the tutorial, I've created `posts.js` which renders a list of posts in `posts-list.js`, but this unnecessarily seems to add more files / makes it convoluted
-
-– Post Index
-  – added posts-index.js
-  – added a public-posts.js container
-  – added a public-posts.js UI component
-  – added a post.js component for both the post index and individual posts
-    – note: when generating tags, I'm checking for "if (tags[0])" since the code will generate empty arrays if tags don't exist
-
-– Post
-  – added an if statement to prevent post body from displaying in post list
+    * All post adding logic in `post-editlist-page.js` for a new post, as opposed to a new `add-posts.js` file as there aren't many lines of code
+* Post Editor
+    * We get a specific `postID` from the route as a page parameter, then retrieve the appropriate post to edit. We then pass this post information into `post-edit.js`
+    * Renamed editor subscription from `editor` to `postById`
+    * `post-edit.js`: Note that the accompanying functionality is combined into a large React component 
+    * Form validation uses `login.js`'s' way of validating, and getting input values
+    * Post Editor uses `{ PostUpdate }` to process and validate the form
+    * PostEdit can't be stateless (since we're using `slug` state and `componentDidMount()`, so we use ES6 syntax to extend React.Component
+    * We define the display variables like date within render() instead of using a ton of helper functions, to be more readable
+    * I used a React Component because PostEdit needs to use state variables
+    * Added a `post-update.js` module to handle post edit updating
+    * Added an `isChecked` function to `get-input-value.js` for checkboxes
+    * Added stricter validation schema for upsert in `posts/methods.js`
+    * In order to be consistent with the tutorial, I've created `posts.js` which renders a list of posts in `posts-list.js`, but this seems to unnecessarily add more files / makes it convoluted
+* Post Index
+  * When generating tags, I'm checking for "if (tags[0])" since the code will generate empty arrays if tags don't exist
+* Post
+  * Added an if statement to prevent post body from displaying in post list
 
 
 ##### Helpers
@@ -191,6 +184,8 @@ The naming convention used in the tutorial was very confusing for me (e.g. `post
 
 
 
+
+{: #organization}
 
 ### Naming & Organization
 
@@ -282,8 +277,8 @@ Goal: Add user-uploaded header images to each blog post, and a files list
 * add jquery cookie `meteor add benjaminrh:jquery-cookie`
 * add underscore `meteor add underscore` – used for file-collection handling
 * create a new collection
-  – update `/startup/server/api.js` with a references to `files` collection – '../../api/files/` ...
-  – copy /posts/ into a new /files/ and rename references to files
+    * update `/startup/server/api.js` with a references to `files` collection – '../../api/files/` ...
+    * copy /posts/ into a new /files/ and rename references to files
 * new routes
 * new /api/
 * pages
@@ -295,39 +290,15 @@ Goal: Add user-uploaded header images to each blog post, and a files list
 
 
 {: #appmap}
+
 ## App Map & Outline
 
 ### App Outline
 
-– public, tests, server, clients – are all native meteor runtime folders
-– note that /import/ is supported for files dynamically imported
-– why are so many files named the same thing?? several files that do very different things are called 'documents'
-  – very confusing, and difficult for file search or lookup. Consider renaming to 'documents__page','documents__schema','documents__component'
-Server Ideas & Qs:
-– why are server things in imports/api when they probably should just remain under /server/ to be more easier found?
-  – or rename /api/ to /server/ to denote that these are extensions of the /server/ folder
-– maybe create an import-only /documents/index.js (just like /server/ ) – for including all documents related methods and publications?
-  – 'documents.js' should really be 'schema.js'
-– cut out the /documents/server folder and keep publications on the same level
-– special naming for a Mongo Collection is helpful ex: '_Documents' -> export const Documents = new Mongo.Collection('Documents');
-– special naming for subscription / publication – __documents instead of documents -> Meteor.publish('documents', () => Documents.find()); const subscription = Meteor.subscribe('documents');
-– inconsistency in naming some react components in modules
-  – especially handle___ components - component name and file name are different, file name doesn't show it's a support file
-  – ex: {handleLogin} is the main component in modules/login.js; login isn't actually an exported function
+* `/public`, `/tests`, `/server`, `/clients` are native meteor runtime folders
+* `/import` is dynamically imported files during runtime
+* `api/server` is important to differentiate between client-side and server-side data functionality
 
-– React Component types
-  – stateless: export const handleLogin = (options) => {
-  – React.createClass
-    – "old / official" way of creating React classes
-  – extend React.Compontent
-    – ES6 class
-    – needs constructor(props) {super(props);} to handle props
-  – special note on React.createClass versus extends React.Component: https://toddmotto.com/react-create-class-versus-component/
-    – 
-
-– denotes a same level relationship
-> denotes an imported child relationship
-< denotes an imported non-child relationship (e.g. completely different folder)
 
 - /public/                                                   ## public images and assets
 - /tests/                                                    ## unit tests
@@ -398,11 +369,10 @@ Components  – a React partial that renders info, possibly data
 
 
 {: #styling}
+
 ## Styling 
 
-– Styling should generally not care about how the app is organized
-– BUT you can run into conflicts, so we can encapsulate and compartmentalize by react components
-– avoid confusion when styling (easy to find where some class comes from, at the expense of a longer name)
+The SCSS should generally not care about how the app is organized, but you can run into conflicts, so we can encapsulate and compartmentalize by components and functionality. 
 
 
 ##### Styling
@@ -419,14 +389,9 @@ Added some minor styling into the base `application.scss` file
 * draw the current "import" file tree in ReadMe
 * handle file upload disconnects (handle resume, or handle garbage collection on componentWillMount() )
 * add copious amounts of inline comments explaining every line (for others and your future self)
-* rename files to make more sense
-    * add file and posts structure to the map
-    * improve naming convention (e.g. posts-list is for authenticated posts, but file name doesn't reflect this)
-    * see if it makes any sense to move some stuff around or rename files to make more sense (api/posts/... for example don't have a base include file to organize everything) – make more human readable
 * organized SCSS naming scheme that matches new file component structure
 * a way to document component file relationships 
 * finish up the writeup into markdown
-* make more readable, and upload to github
 * post on MeteorChef 
     * make a note in the original thread comments
 * make a note on vsivsi:file-collection github issue #77 on how I handled garbage collection
@@ -440,7 +405,11 @@ Added some minor styling into the base `application.scss` file
 * garbage collection of canceled files
 * hide signup, since this is only for crew
     * hide the link on nav, hide the oute
-
+* rename files to make more sense
+    * add file and posts structure to the map
+    * improve naming convention (e.g. posts-list is for authenticated posts, but file name doesn't reflect this)
+    * see if it makes any sense to move some stuff around or rename files to make more sense (api/posts/... for example don't have a base include file to organize everything) – make more human readable
+* make more readable, and upload to github
 
 
 
