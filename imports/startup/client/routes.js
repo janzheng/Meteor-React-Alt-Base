@@ -7,12 +7,12 @@ import { Meteor } from 'meteor/meteor';
 import { App } from '../../ui/layouts/app';
 
 /* authenticated routes */
+import { Documents } from '../../ui/pages/documents';
 import { PostEditlistPage } from '../../ui/pages/post-editlist-page'; 
 import { PostEditPage } from '../../ui/pages/post-edit-page';
 import { FileListPage } from '../../ui/pages/file-list-page';
 
 /* public routes */
-import { Documents } from '../../ui/pages/documents';
 import { PostListPage } from '../../ui/pages/post-list-page'; // the public posts list
 import { PostSinglePage } from '../../ui/pages/post-single-page';
 import { LoginPage } from '../../ui/pages/login-page';

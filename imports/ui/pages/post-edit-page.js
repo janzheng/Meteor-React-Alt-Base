@@ -1,7 +1,7 @@
 
 /*
 
-    Edit Post
+    Edit a single Post
 
 */
 

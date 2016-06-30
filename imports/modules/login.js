@@ -2,6 +2,7 @@
 import { browserHistory } from 'react-router';
 import { Meteor } from 'meteor/meteor';
 import { Bert } from 'meteor/themeteorchef:bert';
+
 import { getInputValue } from './get-input-value';
 
 let component;

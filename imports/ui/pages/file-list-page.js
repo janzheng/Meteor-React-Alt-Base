@@ -8,10 +8,11 @@
 
 
 import React from 'react';
+import { Meteor } from 'meteor/meteor';
 import { Row, Col } from 'react-bootstrap';
+
 import FileList from '../containers/__file-list.js';
 import { FileAdd } from '../components/file-add.js';
-import { Meteor } from 'meteor/meteor';
 
 export const FileListPage = () => (
   <Row>

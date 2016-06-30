@@ -215,7 +215,7 @@ We should also take care to ensure that the Component name matches that of a fil
 
 
 
-#### API/
+#### API
 
 The API folder combines files for both the client and server. Although `methods.js` and `publications.js` are identically named, the Collection and Schema file (e.g. `posts.js`) are different, breaking consistency. I've renamed them `collection.js` to be consistent.
 
@@ -294,89 +294,171 @@ Goal: Add user-uploaded header images to each blog post, and a files list
 
 ### App Outline
 
+The App Map doesn't show the file structure, but the `import` structure of files – specifically, what files need other files to run, and exactly how the maze of files and folders works. I feel like a chart like this is necessary for much larger projects with hundreds of files, as the organization could get very confusing. 
+
 * `public/`, `tests/`, `server/`, `clients/` are native meteor runtime folders
 * `import/` is dynamically imported files during runtime
 * `api/server/` is important to differentiate between client-side and server-side data functionality
 
+
+##### General Meteor
+
+```
+- public/                                                   # public images and assets
+- tests/                                                    # unit tests
+```
+
+##### Server Side
+
 ```
 ∟ denotes an import
 
-- public/                                                   ## public images and assets
-- tests/                                                    ## unit tests
+[Documents]     – API shortcut to //imports/api/documents
+[Posts]         – API shortcut to //imports/api/posts
+[Files]         – API shortcut to //imports/api/files
 
-SERVER SIDE
-
-server/                                                     ## Meteor server runtime
-  main.js                                                   ## (imports only) used to manage new MongoDB collections
-    ∟ //imports/startup/server/                             [import]
-
-imports/startup/server/index.js                             ## (imports only)
-    ∟ accounts/email-templates.js                           ## email templates (ex: forgot password email)
-    ∟ fixtures.js                                           ## hardcoded users and server rules
-    ∟ browser-policy.js                                     ## used for special circumstances, like with amazon
-    ∟ api.js                                                ## (imports only) Collection publications and methods
-      ∟ //imports/api/documents/server/publications.js      ## Meteor.publish('documents', ...)
-        ∟ ../documents.js                                   ## collection & schema
-      ∟ //imports/api/documents/methods.js                  ## methods (like inserting, deleting) for documents
-        ∟ documents.js 
-      ∟ //imports/api/posts/server/publications.js          ## Meteor.publish('posts', ...)
-        ∟ ../collection.js                                  ## collection & schema
-      ∟ //imports/api/posts/methods.js
-          ∟ collection.js                                   ## schema
-      ∟ //imports/api/files/server/publications.js          ## Meteor.publish('files', ...)
-        ∟ ../collection.js                                  ## collection & schema
-      ∟ //imports/api/files/methods.js
-          ∟ collection.js                                   ## schema
+server/                                                     # Meteor server runtime
+  main.js                                                   # (imports only) main server-side runtime entry point
+    ∟ //imports/startup/server/index.js                     # (imports only)
+      ∟ accounts/email-templates.js                         # email templates (ex: forgot password email)
+      ∟ fixtures.js                                         # hardcoded users and server rules
+      ∟ browser-policy.js                                   # used for special circumstances, like with amazon
+      ∟ api.js                                              # (imports only) Collection publications and methods
+        ∟ [Documents] server/publications.js                # Meteor.publish('documents', ...)
+          ∟ [Documents] documents.js                        # collection & schema
+        ∟ [Documents] methods.js                            # methods (like inserting, deleting) for documents
+          ∟ [Documents] documents.js 
+        ∟ [Posts] server/publications.js                    # Meteor.publish('posts', ...)
+          ∟ [Posts] collection.js                           # collection & schema
+        ∟ [Posts] methods.js
+            ∟ [Posts] collection.js                                 
+        ∟ [Files] server/publications.js                    # Meteor.publish('files', ...)
+          ∟ [Files] collection.js                           # collection & schema
+        ∟ [Files] methods.js
+            ∟ [Files] collection.js                                 
+```
 
 
 
+##### Client Side
 
-CLIENT SIDE
+```
+∟ denotes an import
 
-Layout      – a template with elements that exist across many pages
-Pages       – a page that renders info, possibly with containers and components
-Container   - a komposer wrapper for componens that gives Meteor data access
-Components  – a React partial that renders info, possibly data
+Layout          – a template with elements that exist across many pages
+Pages           – a page that renders info, possibly with containers and components
+Container       - a komposer wrapper for componens that gives a React component access to Meteor data
+Components      – a React partial that renders info, possibly data
 
-– /client/                                                  ## Meteor client runtime'
-  – stylesheets                                             ## .scss for the entire site
-  – main.html                                               ## main static html. contains <div id="react-root"> that routes.js renders off of
-  – main.js                                                 ## [imports only] main client-side runtime
-    < /imports/startup/client/index.js                      ## { Bert } defines app-level imports like Bert and bootstrap
-      - routes.js                                           ## react router routes
-        < /imports/ui/layouts/app .js                       ## { App } acts as the general layout for everything
-          < /imports/ui/containers/app-navigation.js        ## { AppNavigation } general navigation, determines if public or authenticated
-            – public-navigation.js                          ## { PublicNavigation}
-            – authenticated-navigation.js                   ## { AuthenticatedNavigation }
-        < /imports/ui/pages/documents.js                    ## { Documents } Combines onto one page add-documents and documents-list 
-          < /imports/ui/containers/documents-list.js        ## data container for DocumentsList
-            < /api/documents/documents.js                   ## Documents schema
-            < /imports/ui/components/loading.js             
-            < /imports/ui/components/documents-list.js      ## { DocumentsList } Displays documents in a list
-              – document.js                                 ## { Document } Each individual document in the documents list
-                < /api/documents/methods.js                 ## { updateDocument, removeDocument } methods to update the documents collection
-          < /imports/ui/components/add-document.js';        ## { AddDocument } component for adding a doc
-            < /imports/api/documents/methods.js
+UI Shortcuts for readability:
 
-        < /imports/ui/pages/posts.js                        ## { Posts } [unfinished]
-        < /imports/ui/pages/editor.js                       ## { Editor } [unfinished]
+[Documents]     – API shortcut to //imports/api/documents
+[Posts]         – API shortcut to //imports/api/posts
+[Files]         – API shortcut to //imports/api/files
 
-        < /imports/ui/pages/posts-index.js                  ## { PostsIndex }
-        < /imports/ui/pages/login.js                        ## { Login } contains the login forms
-          < /imports/modules/login.js                       ## { handleLogin } (stateless) validation of login forms
-            – get-input-value.js                            ## { getInputValue } very handy reusable module to get the refs from forms
-        
-        < /imports/ui/pages/single-post.js                  ## { SinglePost }
-        < /imports/ui/pages/not-found.js                    ## { NotFound } 404 page
-        < /imports/ui/pages/recover-password.js             ## { RecoverPassword } 404 page
-          < /imports/modules/recover-password.js            ## { handleRecoverPassword } Signup and user processing
-            – get-input-value.js                            ## { getInputValue } very handy reusable module to get the refs from forms
-        < /imports/ui/pages/reset-password.js               ## { ResetPassword } 404 page
-          < /imports/modules/reset-password.js              ## { handleResetPassword } Signup and user processing
-        < /imports/ui/pages/signup.js                       ## { Signup } Signup forms
-          < /imports/modules/signup.js                      ## { handleSignup } Signup and user processing
-            – get-input-value.js                            ## { getInputValue } very handy reusable module to get the refs from forms
+[layouts]       – shortcut to //imports/ui/layouts
+[pages]         – shortcut to //imports/ui/pages
+[containers]    – shortcut to //imports/ui/containers
+[components]    – shortcut to //imports/ui/components
 
+client/                                                       # Meteor client runtime'
+  stylesheets/                                                # .scss for the entire site
+  main.html                                                   # main html with #react-root that routes.js renders
+  main.js                                                     # [imports only] main client-side runtime / entry point
+    ∟ //imports/startup/client/index.js                       # { Bert } defines app-level imports like Bert and bootstrap
+      ∟ routes.js                                             # react router routes
+        ∟ [layouts] app.js                                    # { App } acts as the general layout for everything
+            ∟ [containers] __app-navigation.js                # { AppNavigation } data container
+              ∟ [components] app-navigation.js                # { AppNavigation } general navigation, auth or public
+                ∟ [components] navigation__public.js          # { Navigation__Public }
+                ∟ [components] navigation__authenticated.js   # { Navigation__Authenticated }
+
+        Authenticated Routes
+
+        ∟ [pages]/documents                                   # { Documents } Base example.
+          ∟ [components] add-document.js                      # Add new documents component
+            ∟ [Documents] methods.js                          # { insertDocument }
+          ∟ [containers] __documents-list.js                  # Data container for { DocumentsList }
+            ∟ [Documents] documents.js                        # Documents collection (named 'collection.js' in others)
+            ∟ [components] loading.js
+            ∟ [components] documents-list.js                  # { DocumentsList } display list of documents
+              ∟ [components] document.js                      # { Document } handles update and remove
+                ∟ [Documents] methods.js                      # { updateDocument, removeDocument }
+
+        ∟ [pages] post-editlist-page.js                       # { PostEditlistPage} show list of editable posts
+            ∟ [Posts] methods.js                              # { newPost }
+            ∟ [containers] __post-list__auth.js               # Data container for { PostList__Auth } 
+              ∟ [Posts] collection.js                         # get Posts data
+              ∟ [components] loading.js
+              ∟ [components] post-list__auth.js             # { PostList__Auth } list of authenticated posts
+
+        ∟ [pages] post-edit-page.js                         # { PostEditPage } edit one post
+            ∟ [containers] __post-edit.js                   # Data container for { PostList__Auth }
+              ∟ [Files] collection                          # File data for image handling
+              ∟ [Posts] collection.js                       # get Posts data
+              ∟ [components] loading.js
+              ∟ [components] post-edit.js                   # { PostList__Auth } single post edit details
+
+        ∟ [pages] post-edit-page.js                         # { PostEditPage } edit one post
+            ∟ [containers] __post-edit.js                   # Data container for { PostList__Auth }
+              ∟ [Files] collection                          # File data for image handling
+              ∟ [Posts] collection.js                       # get Posts data
+              ∟ [components] loading.js
+              ∟ [components] post-edit.js                   # { PostList__Auth } single post edit details
+
+        ∟ [pages] file-list-page.js                         # { FileListPage } list of files (file management)
+          ∟ [components] file-add.js                        # { FileAdd } uploads a file to File collection
+            ∟ [Files] methods.js                            # (various FileCollection methods)
+          ∟ [containers] __file-list.js
+            ∟ [Files] collection.js                         # retrieves the list of files
+            ∟ [components] loading.js
+            ∟ [components] file-list.js                     # { FileList } main file list component
+              ∟ [components] file.js                        # { File } each file; includes 
+                ∟ [Files] collection.js                     # get Files collection
+                ∟ [modules] file-helpers.js                 # { isTypeImage, getReadableFileSizeString } helpers
+                ∟ [Files] methods.js                        # { deleteFile } grant the ability to delete a file from list
+          ∟ [containers] __post-name.js                     # container for getting posts
+            ∟ [Posts] collection.js                         # { Posts } collection
+            ∟ [components] post-name.js                     # { PostName } display name and link to image's containing post
+
+
+        Public Routes
+
+        ∟ [pages] login-page.js                             # { LoginPage } public posts list
+          ∟ [modules] login.js                              
+            ∟ [modules] get-input-value.js                  # { getInputValue } get input values from form
+
+        ∟ [pages] not-found-page.js                         # { NotFoundPage } page not found / 404 catch all
+
+        ∟ [pages] recover-password-page.js                  # { RecoverPasswordPage } password lost
+          ∟ [modules] recover-password.js                   # { handleRecoverPassword }           
+            ∟ [modules] get-input-value.js                  # { getInputValue } get input values from form
+
+        ∟ [pages] reset-password-page.js                    # { ResetPasswordPage } public posts list
+          ∟ [modules] reset-password.js                     # { handleResetPassword }
+            ∟ [modules] get-input-value.js                  # { getInputValue } get input values from form
+
+        ∟ [pages] signup-page.js                            # { SignupPage } public posts list
+          ∟ [modules] reset-password.js                     # { handleSignup }
+            ∟ [modules] get-input-value.js                  # { getInputValue } get input values from form
+
+        ∟ [pages] post-list-page.js                         # { PostListPage } public posts list
+          ∟ [containers] __post-list__public                # data container for displaying public posts
+            ∟ [Posts] collection.js                         # Post data
+            ∟ [components] loading.js
+            ∟ [components] post-list__public.js             # { PostList__Public } displaying posts publicly
+              ∟ [components] post__public.js                # { Post__Public } render posts in a list
+                ∟ [modules] file-helpers.js                 # { getFileURL, isTypeImage }
+
+
+        ∟ [pages] post-single-page.js                       # { PostSinglePage } public single post from slug
+          ∟ [containers] __post-single__public              # data container for a single post
+            ∟ [Files] collection.js                         # File data for images
+            ∟ [Posts] collection.js                         # Post data
+            ∟ [components] loading.js
+            ∟ [components] post__public.js                  # { Post__Public } displaying posts publicly
+              ∟ [components] post__public.js                # { Post__Public } render posts individually
+                ∟ [modules] file-helpers.js                 # { getFileURL, isTypeImage }
 
 
 
