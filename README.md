@@ -215,7 +215,7 @@ We should also take care to ensure that the Component name matches that of a fil
 
 
 
-#### /API/
+#### API/
 
 The API folder combines files for both the client and server. Although `methods.js` and `publications.js` are identically named, the Collection and Schema file (e.g. `posts.js`) are different, breaking consistency. I've renamed them `collection.js` to be consistent.
 
@@ -272,6 +272,8 @@ I also added file and image handling to this base tutorial, since images and fil
 
 Goal: Add user-uploaded header images to each blog post, and a files list
 
+> SECTION UNFINISHED 
+
 * add file-collection `meteor add vsivsi:file-collection`
 * add jquery cookie `meteor add benjaminrh:jquery-cookie`
 * add underscore `meteor add underscore` – used for file-collection handling
@@ -292,28 +294,40 @@ Goal: Add user-uploaded header images to each blog post, and a files list
 
 ### App Outline
 
-* `/public`, `/tests`, `/server`, `/clients` are native meteor runtime folders
-* `/import` is dynamically imported files during runtime
-* `api/server` is important to differentiate between client-side and server-side data functionality
+* `public/`, `tests/`, `server/`, `clients/` are native meteor runtime folders
+* `import/` is dynamically imported files during runtime
+* `api/server/` is important to differentiate between client-side and server-side data functionality
 
+```
+∟ denotes an import
 
-- /public/                                                   ## public images and assets
-- /tests/                                                    ## unit tests
-– /server/                                                   ## Meteor server runtime
-  – ./main.js                                                ## [imports only] used to manage new MongoDB collections
-    < /imports/startup/server/index.js                       ## [imports only]
-      > /accounts/email-templates.js                         ## email templates (ex: forgot email)
-      – fixtures.js                                          ## hardcoded users
-      – browser-policy.js                                    ## used for special circumstances, like with amazon
-      – api.js                                               ## [imports only] includes for server-side Collection publications and methods
-        < /imports/api/documents/server/publications.js      ## Meteor.publish('documents', ...)
-          < ../documents.js                                  ## schema for documents
-        < /imports/api/documents/methods.js                  ## methods (like inserting, deleting) for documents
-          > documents.js                                     ## schema
-        < /imports/api/posts/server/publications.js          ## Meteor.publish('posts', ...)
-          < ../posts.js                                      ## schema
-        < /imports/api/posts/methods.js
-          > posts.js                                         ## schema
+- public/                                                   ## public images and assets
+- tests/                                                    ## unit tests
+
+SERVER SIDE
+
+server/                                                     ## Meteor server runtime
+  main.js                                                   ## (imports only) used to manage new MongoDB collections
+    ∟ //imports/startup/server/                             [import]
+
+imports/startup/server/index.js                             ## (imports only)
+    ∟ accounts/email-templates.js                           ## email templates (ex: forgot password email)
+    ∟ fixtures.js                                           ## hardcoded users and server rules
+    ∟ browser-policy.js                                     ## used for special circumstances, like with amazon
+    ∟ api.js                                                ## (imports only) Collection publications and methods
+      ∟ //imports/api/documents/server/publications.js      ## Meteor.publish('documents', ...)
+        ∟ ../documents.js                                   ## collection & schema
+      ∟ //imports/api/documents/methods.js                  ## methods (like inserting, deleting) for documents
+        ∟ documents.js 
+      ∟ //imports/api/posts/server/publications.js          ## Meteor.publish('posts', ...)
+        ∟ ../collection.js                                  ## collection & schema
+      ∟ //imports/api/posts/methods.js
+          ∟ collection.js                                   ## schema
+      ∟ //imports/api/files/server/publications.js          ## Meteor.publish('files', ...)
+        ∟ ../collection.js                                  ## collection & schema
+      ∟ //imports/api/files/methods.js
+          ∟ collection.js                                   ## schema
+
 
 
 

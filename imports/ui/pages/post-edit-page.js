@@ -1,3 +1,10 @@
+
+/*
+
+    Edit Post
+
+*/
+
 import React from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
 import PostEdit from '../containers/__post-edit.js';

@@ -1,5 +1,10 @@
 
-// public, published posts only
+/*
+
+    Display a list posts
+    – Public, published posts only
+
+*/
 
 import React from 'react';
 import { Row, Col, Jumbotron } from 'react-bootstrap';
