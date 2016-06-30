@@ -33,9 +33,9 @@ I also added file and image handling to this base tutorial, since images and fil
 
 Even with Base 4's adherence to the new application structure per the [Meteor Guide](https://guide.meteor.com/structure.html) things get confusing very quickly. I've attempted to alleviate the confusion between file names through file naming conventions, yet still adhering to the Meteor Guide.
 
-To make better sense of how a Meteor + React app is organized, I've attempted to map out the way files include each other. Check out the [Organization](#Naming & Organization) section and the [App Map & Outline](#appmap).
+To make better sense of how a Meteor + React app is organized, I've attempted to map out the way files include each other. Check out the [Organization](#user-content-naming--organization) section and the [App Map & Outline](#user-content-app-map--outline).
 
-I also started a way to organize SCSS styling to adhere to React component organization with a BEM-like syntax. Check out the [Styling section](#styling).
+I also started a way to organize SCSS styling to adhere to React component organization with a BEM-like syntax. Check out the [Styling section](#user-content-styling).
 
 
 
@@ -288,8 +288,6 @@ Goal: Add user-uploaded header images to each blog post, and a files list
 
 
 
-{: #appmap}
-
 ## App Map & Outline
 
 ### App Outline
@@ -367,7 +365,6 @@ Components  – a React partial that renders info, possibly data
 
 
 
-{: #styling}
 
 ## Styling 
 
